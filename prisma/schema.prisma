@@ -63,6 +63,53 @@ model User {
     accounts      Account[]
     sessions      Session[]
     posts         Post[]
+	prompts       Prompt[]
+	permissions   Permission[]
+
+}
+
+model Prompt {
+	id        String   @id @default(cuid())
+	name      String
+	text      String
+	role      Role
+
+	course    String[]
+	provider  String[]
+	security  String
+
+	createdAt DateTime @default(now())
+	updatedAt DateTime @updatedAt
+
+	createdBy   User   @relation(fields: [createdById], references: [id])
+	createdById String
+
+	team        Team  @relation(fields: [teamId], references: [id])
+	teamId      String
+
+	@@index([text])
+}
+
+
+
+model Team {
+	id        String   @id @default(cuid())
+	name      String
+	
+	createdAt DateTime @default(now())
+	updatedAt DateTime @updatedAt
+	
+	prompts  Prompt[]
+	users    Permission[]
+}
+
+model Permission {
+    id                       String  @id @default(cuid())
+	team		Team  @relation(fields: [teamId], references: [id])
+	teamId		String
+	user		User  @relation(fields: [userId], references: [id])
+	userId		String
+	role		Role
 }
 
 model VerificationToken {
@@ -71,4 +118,12 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+
+enum Role {
+  VIEWER
+  WRITER
+  MANAGER
+  ADMIN
 }
