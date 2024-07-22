@@ -65,32 +65,7 @@ model User {
     posts         Post[]
 	prompts       Prompt[]
 	permissions   Permission[]
-
 }
-
-model Prompt {
-	id        String   @id @default(cuid())
-	name      String
-	text      String
-	role      Role
-
-	course    String[]
-	provider  String[]
-	security  String
-
-	createdAt DateTime @default(now())
-	updatedAt DateTime @updatedAt
-
-	createdBy   User   @relation(fields: [createdById], references: [id])
-	createdById String
-
-	team        Team  @relation(fields: [teamId], references: [id])
-	teamId      String
-
-	@@index([text])
-}
-
-
 
 model Team {
 	id        String   @id @default(cuid())
@@ -99,18 +74,55 @@ model Team {
 	createdAt DateTime @default(now())
 	updatedAt DateTime @updatedAt
 	
-	prompts  Prompt[]
+	projects  Project[]
 	users    Permission[]
 }
 
 model Permission {
-    id                       String  @id @default(cuid())
-	team		Team  @relation(fields: [teamId], references: [id])
-	teamId		String
-	user		User  @relation(fields: [userId], references: [id])
+	team		Team    @relation(fields: [teamId], references: [id]) 
+	teamId		String  @default(cuid())
+	user		User    @relation(fields: [userId], references: [id])
 	userId		String
 	role		Role
+
+    @@unique([teamId, userId])
 }
+
+model Prompt {
+	id        String   @id @default(cuid())
+	name      String
+	text      String
+	role      Role
+
+	security  String
+
+	createdAt DateTime @default(now())
+	updatedAt DateTime @updatedAt
+
+	createdBy   User   @relation(fields: [createdById], references: [id])
+	createdById String
+
+	project     Project  @relation(fields: [projectId], references: [id])
+	projectId      String
+
+	@@index([text])
+}
+
+
+
+model Project {
+	id        String   @id @default(cuid())
+	name      String
+	
+	createdAt DateTime @default(now())
+	updatedAt DateTime @updatedAt
+
+	team      Team  @relation(fields: [teamId], references: [id])
+	teamId    String
+	
+	prompts  Prompt[]
+}
+
 
 model VerificationToken {
     identifier String
