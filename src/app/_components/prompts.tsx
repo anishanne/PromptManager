@@ -10,27 +10,40 @@ export function Prompts({
   teamId: string;
   projectId: string;
 }) {
-  const [prompts] = api.prompt.list.useSuspenseQuery({ projectId });
+  const [project] = api.project.get.useSuspenseQuery({ id: projectId });
 
   return (
-    <div className="w-full max-w-xs">
-      {prompts ? (
-        <p className="truncate">
-          Your prompts:
-          {prompts.map((prompt) => (
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href={`/t/${teamId}/p/${projectId}/p/${prompt.id}`}
-              key={prompt.id}
-            >
-              <h3 className="text-2xl font-bold">{prompt.name} →</h3>
-              <div className="text-lg">Currently {prompt.status}</div>
-            </Link>
-          ))}
-        </p>
+    <div className="w-full max-w-lg text-center">
+      <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
+        Projects: {project?.name}
+      </h1>
+      {project?.prompts && project?.prompts.length > 0 ? (
+        <div className="w-full">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
+            {project.prompts.map((prompt) => (
+              <Link
+                className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
+                href={`/t/${teamId}/p/${projectId}/${prompt.id}`}
+                key={prompt.id}
+              >
+                <h3 className="text-2xl font-bold">{prompt.name} →</h3>
+                <div className="text-lg">This is a fire prompt.</div>
+              </Link>
+            ))}
+          </div>
+        </div>
       ) : (
-        <p>You have no prompts yet.</p>
+        <p className="text-lg">This project has no prompts y yet.</p>
       )}
+      <button
+        onClick={() => {
+          setOpen(true);
+        }}
+        className="mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
+      >
+        Create A Project
+      </button>
+      <CreateProject open={open} setOpen={setOpen} teamId={teamId} />
     </div>
   );
 }

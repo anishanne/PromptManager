@@ -23,29 +23,6 @@ export const promptRouter = createTRPCRouter({
       });
     }),
 
-  list: protectedProcedure
-    .input(z.object({ projectId: z.string().min(1) }))
-    .query(async ({ ctx, input: { projectId } }) => {
-      //   const teamWithProjects = await ctx.db.team.findFirst({
-      //     where: {
-      //       users: { some: { userId: ctx.session.user.id } },
-      //       id: teamId,
-      //     },
-      //     include: {
-      //       projects: true,
-      //     },
-      //   });
-      //   if (!teamWithProjects) throw new TRPCError({ code: "NOT_FOUND" });
-
-      //   return teamWithProjects.projects ?? [];
-
-      const prompts = await ctx.db.prompt.findMany({
-        where: { projectId },
-      });
-
-      return prompts ?? [];
-    }),
-
   get: protectedProcedure
     .input(z.object({ promptId: z.string().min(1) }))
     .query(async ({ ctx, input: { promptId } }) => {

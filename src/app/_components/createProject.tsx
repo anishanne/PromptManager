@@ -13,16 +13,18 @@ import { api } from "@/trpc/react";
 export default function CreateProject({
   open,
   setOpen,
+  teamId,
 }: {
   open: boolean;
   setOpen: (open: boolean) => void;
+  teamId: string;
 }) {
   const [name, setName] = useState("");
   const utils = api.useUtils();
 
   const createProject = api.project.create.useMutation({
     onSuccess: async () => {
-      await utils.project.invalidate();
+      await utils.team.invalidate();
       setName("");
       setOpen(false);
     },
@@ -82,7 +84,7 @@ export default function CreateProject({
             <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
               <button
                 type="button"
-                onClick={() => createProject.mutate({ name })}
+                onClick={() => createProject.mutate({ name, teamId })}
                 className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-75 disabled:hover:bg-indigo-600 sm:col-start-2"
                 disabled={createProject.isPending || !name}
               >

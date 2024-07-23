@@ -12,31 +12,20 @@ export const projectRouter = createTRPCRouter({
       });
     }),
 
-  list: protectedProcedure
-    .input(z.object({ teamId: z.string().min(1) }))
-    .query(async ({ ctx, input: { teamId } }) => {
-      const teamWithProjects = await ctx.db.team.findFirst({
-        where: {
-          users: { some: { userId: ctx.session.user.id } },
-          id: teamId,
-        },
-        include: { projects: true },
-      });
-      if (!teamWithProjects) throw new TRPCError({ code: "NOT_FOUND" });
-
-      return teamWithProjects.projects ?? [];
-    }),
-
   get: protectedProcedure
     .input(z.object({ id: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
-      const team = await ctx.db.team.findFirst({
-        where: {
-          users: { some: { userId: ctx.session.user.id } },
-          id: input.id,
-        },
+      const project = await ctx.db.project.findFirst({
+        where: { id: input.id },
+        include: { prompts: true, team: { include: { users: true } } },
       });
 
-      return team ?? null;
+      if (!project) throw new TRPCError({ code: "NOT_FOUND" });
+      if (
+        !project.team.users.some((user) => user.userId === ctx.session.user.id)
+      )
+        return new TRPCError({ code: "FORBIDDEN" });
+
+      return project;
     }),
 });

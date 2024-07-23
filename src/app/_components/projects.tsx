@@ -5,7 +5,7 @@ import Link from "next/link";
 import CreateProject from "@/app/_components/createProject";
 import { useState } from "react";
 
-export function Project({ teamId }: { teamId: string }) {
+export function Projects({ teamId }: { teamId: string }) {
   const [team] = api.team.get.useSuspenseQuery({ teamId });
   const [open, setOpen] = useState(false);
 
@@ -42,7 +42,7 @@ export function Project({ teamId }: { teamId: string }) {
       >
         Create A Project
       </button>
-      <CreateProject open={open} setOpen={setOpen} />
+      <CreateProject open={open} setOpen={setOpen} teamId={teamId} />
     </div>
   );
 }
