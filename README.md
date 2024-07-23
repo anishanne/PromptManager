@@ -6,10 +6,10 @@ CREATE TABLE verification_token
   identifier TEXT NOT NULL,
   expires TIMESTAMPTZ NOT NULL,
   token TEXT NOT NULL,
- 
+
   PRIMARY KEY (identifier, token)
 );
- 
+
 CREATE TABLE accounts
 (
   id SERIAL,
@@ -24,20 +24,20 @@ CREATE TABLE accounts
   scope TEXT,
   session_state TEXT,
   token_type TEXT,
- 
+
   PRIMARY KEY (id)
 );
- 
+
 CREATE TABLE sessions
 (
   id SERIAL,
   "userId" INTEGER NOT NULL,
   expires TIMESTAMPTZ NOT NULL,
   "sessionToken" VARCHAR(255) NOT NULL,
- 
+
   PRIMARY KEY (id)
 );
- 
+
 CREATE TABLE users
 (
   id SERIAL,
@@ -45,15 +45,15 @@ CREATE TABLE users
   email VARCHAR(255),
   "emailVerified" TIMESTAMPTZ,
   image TEXT,
- 
+
   PRIMARY KEY (id)
 );
- ```
-
+```
 
 # Initilize Prisma
-`npm exec prisma migrate dev`
 
+`npx prisma db push`
+`npm exec prisma migrate dev`
 
 # Create T3 App
 
