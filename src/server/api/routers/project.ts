@@ -15,25 +15,18 @@ export const projectRouter = createTRPCRouter({
   list: protectedProcedure
     .input(z.object({ teamId: z.string().min(1) }))
     .query(async ({ ctx, input: { teamId } }) => {
-      const team = await ctx.db.team.findFirst({
+      const teamWithProjects = await ctx.db.team.findFirst({
         where: {
-          users: {
-            some: {
-              userId: ctx.session.user.id,
-            },
-          },
+          users: { some: { userId: ctx.session.user.id } },
           id: teamId,
         },
-      });
-      if (!team) throw new TRPCError({ code: "NOT_FOUND" });
-
-      const projects = await ctx.db.project.findMany({
-        where: {
-          teamId,
+        include: {
+          projects: true,
         },
       });
+      if (!teamWithProjects) throw new TRPCError({ code: "NOT_FOUND" });
 
-      return projects ?? [];
+      return teamWithProjects.projects ?? [];
     }),
 
   get: protectedProcedure
@@ -41,11 +34,7 @@ export const projectRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const team = await ctx.db.team.findFirst({
         where: {
-          users: {
-            some: {
-              userId: ctx.session.user.id,
-            },
-          },
+          users: { some: { userId: ctx.session.user.id } },
           id: input.id,
         },
       });
