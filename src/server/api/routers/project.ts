@@ -28,4 +28,13 @@ export const projectRouter = createTRPCRouter({
 
       return project;
     }),
+
+  update: protectedProcedure
+    .input(z.object({ name: z.string().min(1), projectId: z.string().min(1) }))
+    .mutation(async ({ ctx, input: { name, projectId } }) => {
+      return ctx.db.project.update({
+        where: { id: projectId },
+        data: { name },
+      });
+    }),
 });
