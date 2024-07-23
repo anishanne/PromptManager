@@ -5,7 +5,7 @@ import { useState } from "react";
 import { api } from "@/trpc/react";
 
 export function LatestPost() {
-  const [latestProject] = api.project.getLatest.useSuspenseQuery();
+  const [latestProject] = api.project.list.useSuspenseQuery();
 
   const utils = api.useUtils();
   const [name, setName] = useState("");
