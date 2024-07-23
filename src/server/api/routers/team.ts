@@ -7,17 +7,14 @@ export const teamRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ name: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
-      const permission = await ctx.db.permission.create({
+      const team = await ctx.db.team.create({
+        data: { name: input.name },
+      });
+      return ctx.db.permission.create({
         data: {
           userId: ctx.session.user.id,
+          teamId: team.id,
           role: Role.ADMIN,
-        },
-      });
-
-      return ctx.db.team.create({
-        data: {
-          id: permission.teamId,
-          name: input.name,
         },
       });
     }),
@@ -32,13 +29,14 @@ export const teamRouter = createTRPCRouter({
   }),
 
   get: protectedProcedure
-    .input(z.object({ id: z.string().min(1) }))
-    .query(async ({ ctx, input }) => {
+    .input(z.object({ teamId: z.string().min(1) }))
+    .query(async ({ ctx, input: { teamId } }) => {
       const team = await ctx.db.team.findFirst({
         where: {
           users: { some: { userId: ctx.session.user.id } },
-          id: input.id,
+          id: teamId,
         },
+        include: { projects: true },
       });
 
       return team ?? null;

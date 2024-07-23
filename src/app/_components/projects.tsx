@@ -2,31 +2,47 @@
 
 import { api } from "@/trpc/react";
 import Link from "next/link";
+import CreateProject from "@/app/_components/createProject";
+import { useState } from "react";
 
 export function Project({ teamId }: { teamId: string }) {
-  const [projects] = api.project.list.useSuspenseQuery({ teamId });
+  const [team] = api.team.get.useSuspenseQuery({ teamId });
+  const [open, setOpen] = useState(false);
+
+  if (!team) return null;
 
   return (
-    <div className="w-full max-w-xs">
-      {projects ? (
-        <p className="truncate">
-          Your project lst:
-          {projects.map((project) => (
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href={`/t/${teamId}/p/${project.id}`}
-              key={project.id}
-            >
-              <h3 className="text-2xl font-bold">{project.name} →</h3>
-              <div className="text-lg">
-                {project.prompts.length} prompts in this project.
-              </div>
-            </Link>
-          ))}
-        </p>
+    <div className="w-full max-w-lg text-center">
+      <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
+        Team: {team.name}
+      </h1>
+      {team?.projects && team?.projects.length > 0 ? (
+        <div className="w-full">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
+            {team.projects.map((project) => (
+              <Link
+                className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
+                href={`/t/${teamId}/p/${project.id}`}
+                key={project.id}
+              >
+                <h3 className="text-2xl font-bold">{project.name} →</h3>
+                <div className="text-lg">Many prompts in this project.</div>
+              </Link>
+            ))}
+          </div>
+        </div>
       ) : (
-        <p>You have no projects yet.</p>
+        <p className="text-lg">This team has no projects yet.</p>
       )}
+      <button
+        onClick={() => {
+          setOpen(true);
+        }}
+        className="mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
+      >
+        Create A Project
+      </button>
+      <CreateProject open={open} setOpen={setOpen} />
     </div>
   );
 }
