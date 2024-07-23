@@ -25,6 +25,7 @@ export const teamRouter = createTRPCRouter({
   list: protectedProcedure.query(async ({ ctx }) => {
     const teams = await ctx.db.team.findMany({
       where: { users: { some: { userId: ctx.session.user.id } } },
+      include: { projects: { select: { id: true } } },
     });
 
     return teams ?? [];
