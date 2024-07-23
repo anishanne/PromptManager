@@ -2,6 +2,8 @@
 
 import { api } from "@/trpc/react";
 import Link from "next/link";
+import CreatePrompt from "./createPrompt";
+import { useState } from "react";
 
 export function Prompts({
   teamId,
@@ -11,6 +13,7 @@ export function Prompts({
   projectId: string;
 }) {
   const [project] = api.project.get.useSuspenseQuery({ id: projectId });
+  const [open, setOpen] = useState(false);
 
   return (
     <div className="w-full max-w-lg text-center">
@@ -41,9 +44,9 @@ export function Prompts({
         }}
         className="mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
       >
-        Create A Project
+        Create A Prompt
       </button>
-      <CreateProject open={open} setOpen={setOpen} teamId={teamId} />
+      <CreatePrompt open={open} setOpen={setOpen} teamId={teamId} />
     </div>
   );
 }
