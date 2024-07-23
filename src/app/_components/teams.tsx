@@ -2,15 +2,17 @@
 
 import { api } from "@/trpc/react";
 import Link from "next/link";
+import CreateTeam from "@/app/_components/createTeam";
+import { useState } from "react";
 
 export function Teams() {
   const [teams] = api.team.list.useSuspenseQuery();
+  const [open, setOpen] = useState(false);
 
   return (
-    <div className="w-full max-w-xs">
+    <div>
       {teams && teams.length !== 0 ? (
-        <p className="truncate">
-          Your teams:{" "}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
           {teams.map((team) => (
             <Link
               className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
@@ -23,10 +25,19 @@ export function Teams() {
               </div>
             </Link>
           ))}
-        </p>
+        </div>
       ) : (
-        <p>You have no teams yet.</p>
+        <p className="text-center text-lg">You have no teams yet.</p>
       )}
+      <button
+        onClick={() => {
+          setOpen(true);
+        }}
+        className="mt-2 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
+      >
+        Create A Team
+      </button>
+      <CreateTeam open={open} setOpen={setOpen} />
     </div>
   );
 }
