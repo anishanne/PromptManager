@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 
-export const teamRouter = createTRPCRouter({
+export const promptRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ name: z.string().min(1), teamId: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
