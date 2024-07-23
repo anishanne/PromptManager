@@ -14,11 +14,10 @@ export function Prompts({
 }) {
   const [project] = api.project.get.useSuspenseQuery({ id: projectId });
   const [open, setOpen] = useState(false);
-
   return (
     <div className="w-full max-w-lg text-center">
-      <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-        Projects: {project?.name}
+      <h1 className="mb-4 text-5xl font-extrabold tracking-tight">
+        Project: {project?.name}
       </h1>
       {project?.prompts && project?.prompts.length > 0 ? (
         <div className="w-full">
@@ -46,7 +45,7 @@ export function Prompts({
       >
         Create A Prompt
       </button>
-      <CreatePrompt open={open} setOpen={setOpen} teamId={teamId} />
+      <CreatePrompt open={open} setOpen={setOpen} projectId={projectId} />
     </div>
   );
 }

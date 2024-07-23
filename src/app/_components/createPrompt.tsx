@@ -25,7 +25,7 @@ export default function CreateProject({
 
   const createPrompt = api.prompt.create.useMutation({
     onSuccess: async () => {
-      await utils.team.invalidate();
+      await utils.project.invalidate();
       setName("");
       setText("");
       setOpen(false);

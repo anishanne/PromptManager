@@ -41,4 +41,20 @@ export const teamRouter = createTRPCRouter({
 
       return team ?? null;
     }),
+
+  update: protectedProcedure
+    .input(z.object({ teamId: z.string().min(1), name: z.string().min(1) }))
+    .mutation(async ({ ctx, input: { teamId, name } }) => {
+      return await ctx.db.team.update({
+        where: { id: teamId },
+        data: { name },
+      });
+      //   const team = await ctx.db.team.findFirst({
+      //     where: {
+      //       users: { some: { userId: ctx.session.user.id } },
+      //       id: teamId,
+      //     },
+      //     include: { projects: true },
+      //   });
+    }),
 });

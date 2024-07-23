@@ -14,6 +14,16 @@ export const promptRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const project = await ctx.db.project.findFirst({
+        where: { id: input.projectId },
+        include: { team: { include: { users: true } } },
+      });
+      if (!project) throw new TRPCError({ code: "NOT_FOUND" });
+      if (
+        !project.team.users.some((user) => user.userId === ctx.session.user.id)
+      )
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+
       return ctx.db.prompt.create({
         data: {
           ...input,

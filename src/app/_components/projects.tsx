@@ -13,7 +13,7 @@ export function Projects({ teamId }: { teamId: string }) {
 
   return (
     <div className="w-full max-w-lg text-center">
-      <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
+      <h1 className="mb-4 text-5xl font-extrabold tracking-tight sm:text-[5rem]">
         Team: {team.name}
       </h1>
       {team?.projects && team?.projects.length > 0 ? (
