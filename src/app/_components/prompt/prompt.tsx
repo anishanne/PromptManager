@@ -5,6 +5,7 @@ import { useState } from "react";
 import UpdatePrompt from "./updatePrompt";
 import { HomeIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
+import Loading from "../loading";
 
 export function Prompt({
   teamId,
@@ -18,6 +19,13 @@ export function Prompt({
   const [prompt] = api.prompt.get.useSuspenseQuery({ promptId });
   const [openUpdate, setOpenUpdate] = useState(false);
   const [text, setText] = useState(prompt.text);
+  const utils = api.useUtils();
+
+  const updatePrompt = api.prompt.update.useMutation({
+    onSuccess: async () => {
+      await utils.prompt.invalidate();
+    },
+  });
 
   return (
     <div className="w-full max-w-lg text-center">
@@ -45,8 +53,19 @@ export function Prompt({
 
       {["ADMIN", "MANAGER", "WRITER"].includes(prompt.permission) && (
         <div>
-          <button className="mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20">
-            Save
+          <button
+            onClick={() => {
+              updatePrompt.mutate({
+                projectId,
+                promptId,
+                name: prompt.name,
+                text,
+              });
+            }}
+            className="mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
+            disabled={updatePrompt.isPending || text === prompt.text}
+          >
+            {updatePrompt.isPending ? <Loading /> : "Save"}
           </button>
           <button
             onClick={() => {

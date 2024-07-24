@@ -40,11 +40,12 @@ export const promptRouter = createTRPCRouter({
         promptId: z.string().min(1),
         name: z.string().min(1),
         text: z.string().min(1),
+        projectId: z.string().min(1),
       }),
     )
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ ctx, input: { promptId, name, text, projectId } }) => {
       const prompt = await ctx.db.prompt.findFirst({
-        where: { id: input.promptId },
+        where: { id: promptId },
         include: {
           project: {
             include: {
@@ -66,12 +67,13 @@ export const promptRouter = createTRPCRouter({
         )
       )
         throw new TRPCError({ code: "UNAUTHORIZED" });
-
+      console.log("UPDATING PROMPT", { promptId, name, text, projectId });
       return ctx.db.prompt.update({
-        where: { id: input.promptId },
+        where: { id: promptId },
         data: {
-          name: input.name,
-          text: input.text,
+          name,
+          text,
+          projectId,
         },
       });
     }),
