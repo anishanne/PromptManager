@@ -33,6 +33,46 @@ export const promptRouter = createTRPCRouter({
       });
     }),
 
+  update: protectedProcedure
+    .input(
+      z.object({
+        promptId: z.string().min(1),
+        name: z.string().min(1),
+        text: z.string().min(1),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const prompt = await ctx.db.prompt.findFirst({
+        where: { id: input.promptId },
+        include: {
+          project: {
+            include: {
+              team: {
+                include: {
+                  users: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      if (!prompt) throw new TRPCError({ code: "NOT_FOUND" });
+      if (
+        !prompt.project.team.users.some(
+          (user) => user.userId === ctx.session.user.id,
+        )
+      )
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+
+      return ctx.db.prompt.update({
+        where: { id: input.promptId },
+        data: {
+          name: input.name,
+          text: input.text,
+        },
+      });
+    }),
+
   get: protectedProcedure
     .input(z.object({ promptId: z.string().min(1) }))
     .query(async ({ ctx, input: { promptId } }) => {
