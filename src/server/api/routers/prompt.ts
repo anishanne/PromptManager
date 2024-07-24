@@ -103,4 +103,36 @@ export const promptRouter = createTRPCRouter({
 
       return prompt ?? null;
     }),
+
+  delete: protectedProcedure
+    .input(z.object({ promptId: z.string().min(1) }))
+    .mutation(async ({ ctx, input: { promptId } }) => {
+      const prompt = await ctx.db.prompt.findFirst({
+        where: { id: promptId },
+        include: {
+          project: {
+            include: {
+              team: {
+                include: {
+                  users: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      if (!prompt) throw new TRPCError({ code: "NOT_FOUND" });
+      if (
+        !prompt.project.team.users.some(
+          (user) =>
+            user.userId === ctx.session.user.id &&
+            [Role.ADMIN, Role.MANAGER].includes(user.role),
+        )
+      )
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+
+      return ctx.db.prompt.delete({
+        where: { id: promptId },
+      });
+    }),
 });

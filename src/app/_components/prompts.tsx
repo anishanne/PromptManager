@@ -38,7 +38,7 @@ export function Prompts({
           </div>
         </div>
       ) : (
-        <p className="text-lg">This project has no prompts y yet.</p>
+        <p className="text-lg">This project has no prompts yet.</p>
       )}
       <div>
         <button

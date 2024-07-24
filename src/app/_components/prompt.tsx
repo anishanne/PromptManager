@@ -48,7 +48,13 @@ export function Prompt({
         </button>
       </div>
 
-      <UpdatePrompt open={openUpdate} setOpen={setOpenUpdate} prompt={prompt} />
+      <UpdatePrompt
+        open={openUpdate}
+        setOpen={setOpenUpdate}
+        prompt={prompt}
+        teamId={teamId}
+        projectId={projectId}
+      />
     </div>
   );
 }

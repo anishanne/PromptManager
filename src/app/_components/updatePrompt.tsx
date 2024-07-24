@@ -9,20 +9,27 @@ import {
 } from "@headlessui/react";
 import { DocumentIcon } from "@heroicons/react/24/outline";
 import { api } from "@/trpc/react";
-import { Prompt } from "@prisma/client";
+import { useRouter } from "next/navigation";
+import type { Prompt } from "@prisma/client";
 
 export default function UpdatePrompt({
   open,
   setOpen,
   prompt,
+  teamId,
+  projectId,
 }: {
   open: boolean;
   setOpen: (open: boolean) => void;
   prompt: Prompt;
+  teamId: string;
+  projectId: string;
 }) {
   const [name, setName] = useState("");
   const [text, setText] = useState("");
   const utils = api.useUtils();
+
+  const router = useRouter();
 
   const updatePrompt = api.prompt.update.useMutation({
     onSuccess: async () => {
@@ -30,6 +37,13 @@ export default function UpdatePrompt({
       setName("");
       setText("");
       setOpen(false);
+    },
+  });
+
+  const deletePrompt = api.prompt.delete.useMutation({
+    onSuccess: async () => {
+      await utils.project.invalidate();
+      await router.push(`/t/${teamId}/p/${projectId}`);
     },
   });
 
@@ -58,7 +72,15 @@ export default function UpdatePrompt({
                   as="h3"
                   className="text-base font-semibold leading-6 text-gray-100"
                 >
-                  Create Prompt
+                  Update Prompt —{" "}
+                  <button
+                    onClick={() => {
+                      if (confirm("Are you sure?"))
+                        deletePrompt.mutate({ promptId: prompt.id });
+                    }}
+                  >
+                    Delete
+                  </button>
                 </DialogTitle>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
