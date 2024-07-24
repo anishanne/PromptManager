@@ -22,6 +22,7 @@ export function Prompts({
       <h1 className="mb-4 text-5xl font-extrabold tracking-tight">
         Project: {project?.name}
       </h1>
+      <p className="text-lg">Your permission level: {project?.permission}</p>
       {project?.prompts && project?.prompts.length > 0 ? (
         <div className="w-full">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
@@ -41,22 +42,26 @@ export function Prompts({
         <p className="text-lg">This project has no prompts yet.</p>
       )}
       <div>
-        <button
-          onClick={() => {
-            setOpenCreate(true);
-          }}
-          className="mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-        >
-          Create A Prompt
-        </button>
-        <button
-          onClick={() => {
-            setOpenUpdate(true);
-          }}
-          className="ml-4 mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-        >
-          Update Project
-        </button>
+        {["ADMIN", "MANAGER", "WRITER"].includes(project.permission) && (
+          <button
+            onClick={() => {
+              setOpenCreate(true);
+            }}
+            className="mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
+          >
+            Create A Prompt
+          </button>
+        )}
+        {["ADMIN", "MANAGER"].includes(project.permission) && (
+          <button
+            onClick={() => {
+              setOpenUpdate(true);
+            }}
+            className="ml-4 mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
+          >
+            Update Project
+          </button>
+        )}
       </div>
       <CreatePrompt
         open={openCreate}

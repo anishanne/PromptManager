@@ -37,10 +37,16 @@ export const teamRouter = createTRPCRouter({
           users: { some: { userId: ctx.session.user.id } },
           id: teamId,
         },
-        include: { projects: true },
+        include: { projects: true, users: true },
       });
+      if (!team) throw new TRPCError({ code: "NOT_FOUND" });
 
-      return team ?? null;
+      const user = team.users.find(
+        (user) => user.userId === ctx.session.user.id,
+      );
+      if (!user) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return { ...team, permission: user.role };
     }),
 
   update: protectedProcedure

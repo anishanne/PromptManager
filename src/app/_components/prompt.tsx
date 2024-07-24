@@ -22,6 +22,7 @@ export function Prompt({
       <h1 className="mb-4 text-5xl font-extrabold tracking-tight">
         Prompt: {prompt?.name}
       </h1>
+      <p className="text-lg">Your permission level: {prompt?.permission}</p>
       <p className="text-lg">
         <span>Prompt Text</span>
         <br />
@@ -33,19 +34,22 @@ export function Prompt({
           className="rounded-md bg-gray-800 p-2"
         ></textarea>
       </p>
-      <div>
-        <button className="mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20">
-          Save
-        </button>
-        <button
-          onClick={() => {
-            setOpenUpdate(true);
-          }}
-          className="ml-4 mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-        >
-          Edit Prompt
-        </button>
-      </div>
+
+      {["ADMIN", "MANAGER", "WRITER"].includes(prompt.permission) && (
+        <div>
+          <button className="mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20">
+            Save
+          </button>
+          <button
+            onClick={() => {
+              setOpenUpdate(true);
+            }}
+            className="ml-4 mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
+          >
+            Edit Prompt
+          </button>
+        </div>
+      )}
 
       <UpdatePrompt
         open={openUpdate}

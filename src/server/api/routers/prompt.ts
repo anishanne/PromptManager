@@ -62,7 +62,7 @@ export const promptRouter = createTRPCRouter({
         !prompt.project.team.users.some(
           (user) =>
             user.userId === ctx.session.user.id &&
-            [Role.ADMIN, Role.MANAGER, Role.WRITER].includes(user.role),
+            ["ADMIN", "MANAGER", "WRITER"].includes(user.role),
         )
       )
         throw new TRPCError({ code: "UNAUTHORIZED" });
@@ -94,14 +94,13 @@ export const promptRouter = createTRPCRouter({
         },
       });
       if (!prompt) throw new TRPCError({ code: "NOT_FOUND" });
-      if (
-        !prompt.project.team.users.some(
-          (user) => user.userId === ctx.session.user.id,
-        )
-      )
-        throw new TRPCError({ code: "UNAUTHORIZED" });
 
-      return prompt ?? null;
+      const permission = prompt.project.team.users.find(
+        (user) => user.userId === ctx.session.user.id,
+      );
+      if (!permission) throw new TRPCError({ code: "FORBIDDEN" });
+
+      return { ...prompt, permission: permission.role };
     }),
 
   delete: protectedProcedure
@@ -126,7 +125,7 @@ export const promptRouter = createTRPCRouter({
         !prompt.project.team.users.some(
           (user) =>
             user.userId === ctx.session.user.id &&
-            [Role.ADMIN, Role.MANAGER].includes(user.role),
+            ["ADMIN", "MANAGER"].includes(user.role),
         )
       )
         throw new TRPCError({ code: "UNAUTHORIZED" });

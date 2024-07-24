@@ -18,6 +18,7 @@ export function Projects({ teamId }: { teamId: string }) {
       <h1 className="mb-4 text-5xl font-extrabold tracking-tight sm:text-[5rem]">
         Team: {team.name}
       </h1>
+      <p className="text-lg">Your permission level: {team?.permission}</p>
       {team?.projects && team?.projects.length > 0 ? (
         <div className="w-full">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
@@ -36,30 +37,34 @@ export function Projects({ teamId }: { teamId: string }) {
       ) : (
         <p className="text-lg">This team has no projects yet.</p>
       )}
-      <div>
-        <button
-          onClick={() => {
-            setOpenCreate(true);
-          }}
-          className="mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-        >
-          Create A Project
-        </button>
-        <button
-          onClick={() => {
-            setOpenUpdate(true);
-          }}
-          className="ml-4 mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-        >
-          Update Team
-        </button>
-      </div>
-      <CreateProject
-        open={openCreate}
-        setOpen={setOpenCreate}
-        teamId={teamId}
-      />
-      <UpdateTeam open={openUpdate} setOpen={setOpenUpdate} team={team} />
+      {["ADMIN", "MANAGER"].includes(team.permission) && (
+        <>
+          <div>
+            <button
+              onClick={() => {
+                setOpenCreate(true);
+              }}
+              className="mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
+            >
+              Create A Project
+            </button>
+            <button
+              onClick={() => {
+                setOpenUpdate(true);
+              }}
+              className="ml-4 mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
+            >
+              Update Team
+            </button>
+          </div>
+          <CreateProject
+            open={openCreate}
+            setOpen={setOpenCreate}
+            teamId={teamId}
+          />
+          <UpdateTeam open={openUpdate} setOpen={setOpenUpdate} team={team} />
+        </>
+      )}
     </div>
   );
 }

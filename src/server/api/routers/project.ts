@@ -40,13 +40,16 @@ export const projectRouter = createTRPCRouter({
       });
 
       if (!project) throw new TRPCError({ code: "NOT_FOUND" });
-      if (
-        !project.team.users.some((user) => user.userId === ctx.session.user.id)
-      )
-        return new TRPCError({ code: "FORBIDDEN" });
 
-      console.log(project.prompts);
-      return project;
+      const permission = project.team.users.find(
+        (user) => user.userId === ctx.session.user.id,
+      );
+      if (!permission) throw new TRPCError({ code: "FORBIDDEN" });
+
+      return {
+        ...project,
+        permission: permission.role,
+      };
     }),
 
   delete: protectedProcedure
