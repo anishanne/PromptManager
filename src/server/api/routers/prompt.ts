@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { Status } from "@prisma/client";
+import { Role } from "@prisma/client";
 
 export const promptRouter = createTRPCRouter({
   create: protectedProcedure
@@ -59,7 +60,9 @@ export const promptRouter = createTRPCRouter({
       if (!prompt) throw new TRPCError({ code: "NOT_FOUND" });
       if (
         !prompt.project.team.users.some(
-          (user) => user.userId === ctx.session.user.id,
+          (user) =>
+            user.userId === ctx.session.user.id &&
+            [Role.ADMIN, Role.MANAGER, Role.WRITER].includes(user.role),
         )
       )
         throw new TRPCError({ code: "UNAUTHORIZED" });
@@ -97,14 +100,6 @@ export const promptRouter = createTRPCRouter({
         )
       )
         throw new TRPCError({ code: "UNAUTHORIZED" });
-
-      //   const team = await ctx.db.team.findFirst({
-      //     where: {
-      //       users: { some: { userId: ctx.session.user.id } },
-      //       id: prompt?.project.teamId,
-      //     },
-      //   });
-      //   if (!team) throw new TRPCError({ code: "UNAUTHORIZED" });
 
       return prompt ?? null;
     }),
