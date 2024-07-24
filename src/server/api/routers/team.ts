@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { TRPCError } from "@trpc/server";
 import { Role } from "@prisma/client";
 
 export const teamRouter = createTRPCRouter({
@@ -49,12 +50,31 @@ export const teamRouter = createTRPCRouter({
         where: { id: teamId },
         data: { name },
       });
-      //   const team = await ctx.db.team.findFirst({
-      //     where: {
-      //       users: { some: { userId: ctx.session.user.id } },
-      //       id: teamId,
-      //     },
-      //     include: { projects: true },
-      //   });
+    }),
+
+  delete: protectedProcedure
+    .input(z.object({ teamId: z.string().min(1) }))
+    .mutation(async ({ ctx, input: { teamId } }) => {
+      const team = await ctx.db.team.findFirst({
+        where: {
+          users: { some: { userId: ctx.session.user.id } },
+          id: teamId,
+        },
+        include: { projects: true, users: true },
+      });
+
+      if (!team) throw new TRPCError({ code: "NOT_FOUND" });
+      if (
+        !team.users.some(
+          (user) =>
+            user.userId === ctx.session.user.id && Role.ADMIN == user.role,
+        )
+      )
+        return new TRPCError({ code: "FORBIDDEN" });
+
+      if (team.projects.length > 0)
+        throw new TRPCError({ code: "BAD_REQUEST" });
+
+      await ctx.db.team.delete({ where: { id: teamId } });
     }),
 });
