@@ -48,6 +48,36 @@ export const projectRouter = createTRPCRouter({
       return project;
     }),
 
+  delete: protectedProcedure
+    .input(z.object({ id: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const project = await ctx.db.project.findFirst({
+        where: { id: input.id },
+        include: {
+          prompts: true,
+          team: {
+            include: { users: true },
+          },
+        },
+      });
+      if (!project) throw new TRPCError({ code: "NOT_FOUND" });
+      if (
+        !project.team.users.some(
+          (user) =>
+            user.userId === ctx.session.user.id &&
+            [Role.ADMIN, Role.MANAGER].includes(user.role),
+        )
+      )
+        return new TRPCError({ code: "FORBIDDEN" });
+
+      if (project.prompts.length > 0)
+        return new TRPCError({ code: "BAD_REQUEST" });
+
+      return ctx.db.project.delete({
+        where: { id: input.id },
+      });
+    }),
+
   update: protectedProcedure
     .input(z.object({ name: z.string().min(1), projectId: z.string().min(1) }))
     .mutation(async ({ ctx, input: { name, projectId } }) => {

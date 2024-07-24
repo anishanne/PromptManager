@@ -43,7 +43,7 @@ export default function UpdatePrompt({
   const deletePrompt = api.prompt.delete.useMutation({
     onSuccess: async () => {
       await utils.project.invalidate();
-      await router.push(`/t/${teamId}/p/${projectId}`);
+      router.push(`/t/${teamId}/p/${projectId}`);
     },
   });
 

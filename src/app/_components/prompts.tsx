@@ -67,6 +67,7 @@ export function Prompts({
         open={openUpdate}
         setOpen={setOpenUpdate}
         project={project}
+        teamId={teamId}
       />
     </div>
   );

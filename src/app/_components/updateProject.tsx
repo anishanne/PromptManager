@@ -9,25 +9,36 @@ import {
 } from "@headlessui/react";
 import { DocumentIcon } from "@heroicons/react/24/outline";
 import { api } from "@/trpc/react";
-import { Project } from "@prisma/client";
+import type { Project, Prompt } from "@prisma/client";
+import { useRouter } from "next/navigation";
 
 export default function UpdateProject({
   open,
   setOpen,
   project,
+  teamId,
 }: {
   open: boolean;
   setOpen: (open: boolean) => void;
-  project: Project;
+  project: Project & { prompts: Prompt[] };
+  teamId: string;
 }) {
   const [name, setName] = useState("");
   const utils = api.useUtils();
+  const router = useRouter();
 
   const updateProject = api.project.update.useMutation({
     onSuccess: async () => {
       await utils.team.invalidate();
       setName("");
       setOpen(false);
+    },
+  });
+
+  const deleteProject = api.project.delete.useMutation({
+    onSuccess: async () => {
+      await utils.team.invalidate();
+      router.push(`/t/${teamId}`);
     },
   });
 
@@ -56,7 +67,17 @@ export default function UpdateProject({
                   as="h3"
                   className="text-base font-semibold leading-6 text-gray-100"
                 >
-                  Edit Project
+                  Edit Project —{" "}
+                  <button
+                    onClick={() => {
+                      if (project.prompts.length > 0)
+                        return alert("Must delete or move all prompts first.");
+                      if (confirm("Are you sure?"))
+                        deleteProject.mutate({ id: project.id });
+                    }}
+                  >
+                    Delete
+                  </button>
                 </DialogTitle>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
