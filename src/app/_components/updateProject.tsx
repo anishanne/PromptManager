@@ -9,15 +9,16 @@ import {
 } from "@headlessui/react";
 import { DocumentIcon } from "@heroicons/react/24/outline";
 import { api } from "@/trpc/react";
+import { Project } from "@prisma/client";
 
 export default function UpdateProject({
   open,
   setOpen,
-  projectId,
+  project,
 }: {
   open: boolean;
   setOpen: (open: boolean) => void;
-  projectId: string;
+  project: Project;
 }) {
   const [name, setName] = useState("");
   const utils = api.useUtils();
@@ -85,9 +86,13 @@ export default function UpdateProject({
             <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
               <button
                 type="button"
-                onClick={() => updateProject.mutate({ name, projectId })}
+                onClick={() =>
+                  updateProject.mutate({ name, projectId: project.id })
+                }
                 className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-75 disabled:hover:bg-indigo-600 sm:col-start-2"
-                disabled={updateProject.isPending || !name}
+                disabled={
+                  updateProject.isPending || !name || name === project.name
+                }
               >
                 {updateProject.isPending ? "Updating" : "Update"}
               </button>

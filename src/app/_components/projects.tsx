@@ -3,11 +3,13 @@
 import { api } from "@/trpc/react";
 import Link from "next/link";
 import CreateProject from "@/app/_components/createProject";
+import UpdateTeam from "@/app/_components/updateTeam";
 import { useState } from "react";
 
 export function Projects({ teamId }: { teamId: string }) {
   const [team] = api.team.get.useSuspenseQuery({ teamId });
-  const [open, setOpen] = useState(false);
+  const [openCreate, setOpenCreate] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
 
   if (!team) return null;
 
@@ -34,15 +36,30 @@ export function Projects({ teamId }: { teamId: string }) {
       ) : (
         <p className="text-lg">This team has no projects yet.</p>
       )}
-      <button
-        onClick={() => {
-          setOpen(true);
-        }}
-        className="mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-      >
-        Create A Project
-      </button>
-      <CreateProject open={open} setOpen={setOpen} teamId={teamId} />
+      <div>
+        <button
+          onClick={() => {
+            setOpenCreate(true);
+          }}
+          className="mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
+        >
+          Create A Project
+        </button>
+        <button
+          onClick={() => {
+            setOpenUpdate(true);
+          }}
+          className="ml-4 mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
+        >
+          Update Team
+        </button>
+      </div>
+      <CreateProject
+        open={openCreate}
+        setOpen={setOpenCreate}
+        teamId={teamId}
+      />
+      <UpdateTeam open={openUpdate} setOpen={setOpenUpdate} team={team} />
     </div>
   );
 }
