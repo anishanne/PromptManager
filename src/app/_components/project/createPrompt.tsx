@@ -83,7 +83,7 @@ export default function CreateProject({
                     <div>
                       <label
                         htmlFor="email"
-                        className="block text-left text-sm font-medium leading-6 text-gray-200"
+                        className="mt-2 block text-left text-sm font-medium leading-6 text-gray-200"
                       >
                         Prompt Text
                       </label>

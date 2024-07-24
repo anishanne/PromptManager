@@ -15,17 +15,17 @@ export function Projects({ teamId }: { teamId: string }) {
   if (!team) return null;
 
   return (
-    <div className="w-full max-w-lg text-center">
-      <h1 className="mb-4 text-5xl font-extrabold tracking-tight sm:text-[5rem]">
+    <div className="w-full text-center">
+      <h1 className="mb-2 text-5xl font-extrabold tracking-tight sm:text-[5rem]">
         Team: {team.name}{" "}
         <Link href="/" className="hover:text-indigo-700">
           <HomeIcon className="inline h-16 w-16" />
         </Link>
       </h1>
-      <p className="text-lg">Your permission level: {team?.permission}</p>
+      <p className="mb-4 text-lg">Your permission level: {team?.permission}</p>
       {team?.projects && team?.projects.length > 0 ? (
         <div className="w-full">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8 lg:grid-cols-4">
             {team.projects.map((project) => (
               <Link
                 className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
@@ -33,7 +33,9 @@ export function Projects({ teamId }: { teamId: string }) {
                 key={project.id}
               >
                 <h3 className="text-2xl font-bold">{project.name} →</h3>
-                <div className="text-lg">Many prompts in this project.</div>
+                <div className="text-lg">
+                  {project?.prompts?.length} prompts in this project.
+                </div>
               </Link>
             ))}
           </div>

@@ -2,7 +2,9 @@
 
 import { api } from "@/trpc/react";
 import { useState } from "react";
-import UpdatePrompt from "../team/updatePrompt";
+import UpdatePrompt from "./updatePrompt";
+import { HomeIcon } from "@heroicons/react/24/solid";
+import Link from "next/link";
 
 export function Prompt({
   teamId,
@@ -21,6 +23,12 @@ export function Prompt({
     <div className="w-full max-w-lg text-center">
       <h1 className="mb-4 text-5xl font-extrabold tracking-tight">
         Prompt: {prompt?.name}
+        <Link
+          href={`/t/${teamId}/p/${projectId}`}
+          className="hover:text-indigo-700"
+        >
+          <HomeIcon className="mb-2 ml-2 inline h-12 w-12" />
+        </Link>
       </h1>
       <p className="text-lg">Your permission level: {prompt?.permission}</p>
       <p className="text-lg">

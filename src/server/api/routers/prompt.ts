@@ -134,4 +134,31 @@ export const promptRouter = createTRPCRouter({
         where: { id: promptId },
       });
     }),
+
+  list: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.db.prompt.findMany({
+      include: {
+        project: {
+          include: {
+            team: {
+              include: {
+                users: true,
+              },
+            },
+          },
+        },
+      },
+      where: {
+        project: {
+          team: {
+            users: {
+              some: {
+                userId: ctx.session.user.id,
+              },
+            },
+          },
+        },
+      },
+    });
+  }),
 });

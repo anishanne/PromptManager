@@ -105,4 +105,18 @@ export const projectRouter = createTRPCRouter({
         data: { name },
       });
     }),
+
+  list: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.db.project.findMany({
+      where: {
+        team: {
+          users: {
+            some: {
+              userId: ctx.session.user.id,
+            },
+          },
+        },
+      },
+    });
+  }),
 });

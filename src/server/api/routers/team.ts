@@ -37,7 +37,7 @@ export const teamRouter = createTRPCRouter({
           users: { some: { userId: ctx.session.user.id } },
           id: teamId,
         },
-        include: { projects: true, users: true },
+        include: { projects: { include: { prompts: true } }, users: true },
       });
       if (!team) throw new TRPCError({ code: "NOT_FOUND" });
 
