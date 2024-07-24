@@ -22,7 +22,7 @@ export function Prompts({
     <div className="w-full max-w-lg text-center">
       <h1 className="mb-4 text-5xl font-extrabold tracking-tight">
         Project: {project?.name}
-        <Link href={`/team/${teamId}`} className="hover:text-indigo-700">
+        <Link href={`/t/${teamId}`} className="hover:text-indigo-700">
           <HomeIcon className="inline h-16 w-16" />
         </Link>
       </h1>

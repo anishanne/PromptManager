@@ -2,8 +2,8 @@
 
 import { api } from "@/trpc/react";
 import Link from "next/link";
-import CreateProject from "@/app/_components/createProject";
-import UpdateTeam from "@/app/_components/updateTeam";
+import CreateProject from "@/app/_components/team/createProject";
+import UpdateTeam from "@/app/_components/team/updateTeam";
 import { useState } from "react";
 import { HomeIcon } from "@heroicons/react/24/solid";
 

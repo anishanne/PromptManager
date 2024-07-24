@@ -9,7 +9,7 @@ import {
 } from "@headlessui/react";
 import { DocumentIcon } from "@heroicons/react/24/outline";
 import { api } from "@/trpc/react";
-import Loading from "./loading";
+import Loading from "../loading";
 
 export default function CreateProject({
   open,

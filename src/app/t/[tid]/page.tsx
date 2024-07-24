@@ -1,4 +1,4 @@
-import { Projects } from "@/app/_components/projects";
+import { Projects } from "@/app/_components/team/projects";
 import { getServerAuthSession } from "@/server/auth";
 import { HydrateClient } from "@/trpc/server";
 

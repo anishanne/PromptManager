@@ -2,7 +2,7 @@
 
 import { api } from "@/trpc/react";
 import Link from "next/link";
-import CreateTeam from "@/app/_components/createTeam";
+import CreateTeam from "@/app/_components/home/createTeam";
 import { useState } from "react";
 
 export function Teams() {

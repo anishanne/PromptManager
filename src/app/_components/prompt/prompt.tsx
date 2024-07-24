@@ -2,7 +2,7 @@
 
 import { api } from "@/trpc/react";
 import { useState } from "react";
-import UpdatePrompt from "./updatePrompt";
+import UpdatePrompt from "../team/updatePrompt";
 
 export function Prompt({
   teamId,

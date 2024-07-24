@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { Teams } from "@/app/_components/teams";
+import { Teams } from "@/app/_components/home/teams";
 import { getServerAuthSession } from "@/server/auth";
 import { HydrateClient } from "@/trpc/server";
 

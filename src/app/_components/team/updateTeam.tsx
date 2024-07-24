@@ -9,23 +9,35 @@ import {
 } from "@headlessui/react";
 import { UserGroupIcon } from "@heroicons/react/24/outline";
 import { api } from "@/trpc/react";
-import Loading from "./loading";
+import Loading from "../loading";
+import { useRouter } from "next/navigation";
+import type { Team, Project } from "@prisma/client";
 
-export default function CreateTeam({
+export default function UpdateTeam({
   open,
   setOpen,
+  team,
 }: {
   open: boolean;
   setOpen: (open: boolean) => void;
+  team: Team & { projects: Project[] };
 }) {
-  const [name, setName] = useState("");
+  const [name, setName] = useState(team.name);
   const utils = api.useUtils();
+  const router = useRouter();
 
-  const createTeam = api.team.create.useMutation({
+  const updateTeam = api.team.update.useMutation({
     onSuccess: async () => {
       await utils.team.invalidate();
       setName("");
       setOpen(false);
+    },
+  });
+
+  const deleteTeam = api.team.delete.useMutation({
+    onSuccess: async () => {
+      router.push("/");
+      await utils.team.invalidate();
     },
   });
 
@@ -54,7 +66,18 @@ export default function CreateTeam({
                   as="h3"
                   className="text-base font-semibold leading-6 text-gray-100"
                 >
-                  Create Team
+                  Update Team —{" "}
+                  <button
+                    onClick={() => {
+                      if (team.projects.length > 0)
+                        return alert("Must delete or move all projects first.");
+                      if (confirm("Are you sure?"))
+                        deleteTeam.mutate({ teamId: team.id });
+                    }}
+                    className="hover:text-red-500"
+                  >
+                    Delete
+                  </button>
                 </DialogTitle>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
@@ -72,6 +95,7 @@ export default function CreateTeam({
                           id="name"
                           className="block w-full rounded-md border-0 bg-gray-800 py-1.5 pl-2 text-gray-200 shadow-sm ring-1 ring-inset ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                           placeholder="English 101"
+                          value={name}
                           onChange={(e) => setName(e.target.value)}
                         />
                       </div>
@@ -83,11 +107,20 @@ export default function CreateTeam({
             <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
               <button
                 type="button"
-                onClick={() => createTeam.mutate({ name })}
+                onClick={() => updateTeam.mutate({ name, teamId: team.id })}
                 className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-75 disabled:hover:bg-indigo-600 sm:col-start-2"
-                disabled={createTeam.isPending || !name}
+                disabled={
+                  updateTeam.isPending ||
+                  deleteTeam.isPending ||
+                  !name ||
+                  name === team.name
+                }
               >
-                {createTeam.isPending ? <Loading /> : "Create"}
+                {updateTeam.isPending || deleteTeam.isPending ? (
+                  <Loading />
+                ) : (
+                  "Update"
+                )}
               </button>
               <button
                 type="button"

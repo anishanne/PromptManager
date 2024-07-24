@@ -11,7 +11,7 @@ import { DocumentIcon } from "@heroicons/react/24/outline";
 import { api } from "@/trpc/react";
 import type { Project, Prompt } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import Loading from "./loading";
+import Loading from "../loading";
 
 export default function UpdateProject({
   open,

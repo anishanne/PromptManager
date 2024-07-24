@@ -1,4 +1,4 @@
-import { Prompt } from "@/app/_components/prompt";
+import { Prompt } from "@/app/_components/prompt/prompt";
 import { getServerAuthSession } from "@/server/auth";
 import { HydrateClient } from "@/trpc/server";
 
