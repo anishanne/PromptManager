@@ -38,8 +38,8 @@ export default function UpdateProject({
 
   const deleteProject = api.project.delete.useMutation({
     onSuccess: async () => {
-      await utils.team.invalidate();
       router.push(`/t/${teamId}`);
+      await utils.team.invalidate();
     },
   });
 

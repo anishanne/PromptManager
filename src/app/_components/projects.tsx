@@ -5,6 +5,7 @@ import Link from "next/link";
 import CreateProject from "@/app/_components/createProject";
 import UpdateTeam from "@/app/_components/updateTeam";
 import { useState } from "react";
+import { HomeIcon } from "@heroicons/react/24/solid";
 
 export function Projects({ teamId }: { teamId: string }) {
   const [team] = api.team.get.useSuspenseQuery({ teamId });
@@ -16,7 +17,10 @@ export function Projects({ teamId }: { teamId: string }) {
   return (
     <div className="w-full max-w-lg text-center">
       <h1 className="mb-4 text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-        Team: {team.name}
+        Team: {team.name}{" "}
+        <Link href="/" className="hover:text-indigo-700">
+          <HomeIcon className="inline h-16 w-16" />
+        </Link>
       </h1>
       <p className="text-lg">Your permission level: {team?.permission}</p>
       {team?.projects && team?.projects.length > 0 ? (

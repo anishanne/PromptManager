@@ -11,7 +11,7 @@ import { UserGroupIcon } from "@heroicons/react/24/outline";
 import { api } from "@/trpc/react";
 import Loading from "./loading";
 import { useRouter } from "next/navigation";
-import type { Team } from "@prisma/client";
+import type { Team, Project } from "@prisma/client";
 
 export default function UpdateTeam({
   open,
@@ -20,7 +20,7 @@ export default function UpdateTeam({
 }: {
   open: boolean;
   setOpen: (open: boolean) => void;
-  team: Team;
+  team: Team & { projects: Project[] };
 }) {
   const [name, setName] = useState(team.name);
   const utils = api.useUtils();
@@ -36,8 +36,8 @@ export default function UpdateTeam({
 
   const deleteTeam = api.team.delete.useMutation({
     onSuccess: async () => {
-      await utils.team.invalidate();
       router.push("/");
+      await utils.team.invalidate();
     },
   });
 
@@ -69,7 +69,10 @@ export default function UpdateTeam({
                   Update Team —{" "}
                   <button
                     onClick={() => {
-                      deleteTeam.mutate({ teamId: team.id });
+                      if (team.projects.length > 0)
+                        return alert("Must delete or move all projects first.");
+                      if (confirm("Are you sure?"))
+                        deleteTeam.mutate({ teamId: team.id });
                     }}
                     className="hover:text-red-500"
                   >
@@ -116,7 +119,7 @@ export default function UpdateTeam({
                 {updateTeam.isPending || deleteTeam.isPending ? (
                   <Loading />
                 ) : (
-                  "update"
+                  "Update"
                 )}
               </button>
               <button

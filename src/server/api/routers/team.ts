@@ -81,6 +81,9 @@ export const teamRouter = createTRPCRouter({
       if (team.projects.length > 0)
         throw new TRPCError({ code: "BAD_REQUEST" });
 
-      await ctx.db.team.delete({ where: { id: teamId } });
+      return ctx.db.$transaction([
+        ctx.db.permission.deleteMany({ where: { teamId } }),
+        ctx.db.team.delete({ where: { id: teamId } }),
+      ]);
     }),
 });

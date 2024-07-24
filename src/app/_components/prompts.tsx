@@ -5,6 +5,7 @@ import Link from "next/link";
 import CreatePrompt from "./createPrompt";
 import { useState } from "react";
 import UpdateProject from "./updateProject";
+import { HomeIcon } from "@heroicons/react/24/solid";
 
 export function Prompts({
   teamId,
@@ -21,6 +22,9 @@ export function Prompts({
     <div className="w-full max-w-lg text-center">
       <h1 className="mb-4 text-5xl font-extrabold tracking-tight">
         Project: {project?.name}
+        <Link href={`/team/${teamId}`} className="hover:text-indigo-700">
+          <HomeIcon className="inline h-16 w-16" />
+        </Link>
       </h1>
       <p className="text-lg">Your permission level: {project?.permission}</p>
       {project?.prompts && project?.prompts.length > 0 ? (
