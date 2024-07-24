@@ -21,7 +21,7 @@ export const projectRouter = createTRPCRouter({
         !team.users.some(
           (user) =>
             user.userId === ctx.session.user.id &&
-            [Role.MANAGER, Role.ADMIN].includes(user.role),
+            (user.role === "MANAGER" || user.role === "ADMIN"),
         )
       )
         return new TRPCError({ code: "FORBIDDEN" });
@@ -45,6 +45,7 @@ export const projectRouter = createTRPCRouter({
       )
         return new TRPCError({ code: "FORBIDDEN" });
 
+      console.log(project.prompts);
       return project;
     }),
 
@@ -65,7 +66,7 @@ export const projectRouter = createTRPCRouter({
         !project.team.users.some(
           (user) =>
             user.userId === ctx.session.user.id &&
-            [Role.ADMIN, Role.MANAGER].includes(user.role),
+            (user.role === "ADMIN" || user.role === "MANAGER"),
         )
       )
         return new TRPCError({ code: "FORBIDDEN" });

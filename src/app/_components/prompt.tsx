@@ -1,7 +1,6 @@
 "use client";
 
 import { api } from "@/trpc/react";
-import Link from "next/link";
 import { useState } from "react";
 import UpdatePrompt from "./updatePrompt";
 

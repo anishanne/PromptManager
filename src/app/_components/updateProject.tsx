@@ -11,6 +11,7 @@ import { DocumentIcon } from "@heroicons/react/24/outline";
 import { api } from "@/trpc/react";
 import type { Project, Prompt } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import Loading from "./loading";
 
 export default function UpdateProject({
   open,
@@ -112,10 +113,17 @@ export default function UpdateProject({
                 }
                 className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-75 disabled:hover:bg-indigo-600 sm:col-start-2"
                 disabled={
-                  updateProject.isPending || !name || name === project.name
+                  updateProject.isPending ||
+                  deleteProject.isPending ||
+                  !name ||
+                  name === project.name
                 }
               >
-                {updateProject.isPending ? "Updating" : "Update"}
+                {updateProject.isPending || deleteProject.isPending ? (
+                  <Loading />
+                ) : (
+                  "Update"
+                )}
               </button>
               <button
                 type="button"

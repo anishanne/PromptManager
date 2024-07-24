@@ -1,8 +1,6 @@
-import Link from "next/link";
-
 import { Prompt } from "@/app/_components/prompt";
 import { getServerAuthSession } from "@/server/auth";
-import { api, HydrateClient } from "@/trpc/server";
+import { HydrateClient } from "@/trpc/server";
 
 export default async function Home({
   params,

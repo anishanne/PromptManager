@@ -69,7 +69,7 @@ export default function UpdateTeam({
                   Update Team —{" "}
                   <button
                     onClick={() => {
-                      deleteTeam.mutate({ id: team.id });
+                      deleteTeam.mutate({ teamId: team.id });
                     }}
                     className="hover:text-red-500"
                   >
@@ -106,9 +106,18 @@ export default function UpdateTeam({
                 type="button"
                 onClick={() => updateTeam.mutate({ name, teamId: team.id })}
                 className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-75 disabled:hover:bg-indigo-600 sm:col-start-2"
-                disabled={updateTeam.isPending || !name || name === team.name}
+                disabled={
+                  updateTeam.isPending ||
+                  deleteTeam.isPending ||
+                  !name ||
+                  name === team.name
+                }
               >
-                {updateTeam.isPending ? <Loading /> : "update"}
+                {updateTeam.isPending || deleteTeam.isPending ? (
+                  <Loading />
+                ) : (
+                  "update"
+                )}
               </button>
               <button
                 type="button"

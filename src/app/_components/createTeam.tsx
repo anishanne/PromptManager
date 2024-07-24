@@ -9,6 +9,7 @@ import {
 } from "@headlessui/react";
 import { UserGroupIcon } from "@heroicons/react/24/outline";
 import { api } from "@/trpc/react";
+import Loading from "./loading";
 
 export default function CreateTeam({
   open,
@@ -86,7 +87,7 @@ export default function CreateTeam({
                 className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-75 disabled:hover:bg-indigo-600 sm:col-start-2"
                 disabled={createTeam.isPending || !name}
               >
-                {createTeam.isPending ? "Loading" : "Create"}
+                {createTeam.isPending ? <Loading /> : "Create"}
               </button>
               <button
                 type="button"

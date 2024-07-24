@@ -10,6 +10,7 @@ import {
 import { DocumentIcon } from "@heroicons/react/24/outline";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
+import Loading from "./loading";
 import type { Prompt } from "@prisma/client";
 
 export default function UpdatePrompt({
@@ -135,12 +136,17 @@ export default function UpdatePrompt({
                 className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-75 disabled:hover:bg-indigo-600 sm:col-start-2"
                 disabled={
                   updatePrompt.isPending ||
+                  deletePrompt.isPending ||
                   !name ||
                   !text ||
                   (name === prompt.name && text === prompt.text)
                 }
               >
-                {updatePrompt.isPending ? "Loading" : "Update"}
+                {updatePrompt.isPending || deletePrompt.isPending ? (
+                  <Loading />
+                ) : (
+                  "Update"
+                )}
               </button>
               <button
                 type="button"
