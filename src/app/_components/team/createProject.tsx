@@ -67,6 +67,10 @@ export default function CreateProject({
 								</div>
 							</div>
 						</div>
+						{createProject.isError && (
+							<p className="mt-2 text-sm text-red-500">{createProject.error.data?.message || "An error occurred."}</p>
+						)}
+
 						<div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
 							<button
 								type="button"

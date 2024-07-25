@@ -150,12 +150,16 @@ export const teamRouter = createTRPCRouter({
 				include: { users: true },
 			});
 
-			if (!team) throw new TRPCError({ code: "NOT_FOUND" });
+			if (!team) throw new TRPCError({ code: "NOT_FOUND", message: "Team not found." });
 			if (!team.users.some((user) => user.userId === ctx.session.user.id && Role.ADMIN == user.role))
-				return new TRPCError({ code: "FORBIDDEN" });
+				return new TRPCError({ code: "FORBIDDEN", message: "You do not have permission to add users to this team." });
 
 			const user = await ctx.db.user.findFirst({ where: { email: userEmail } });
-			if (!user) throw new TRPCError({ code: "NOT_FOUND" });
+			if (!user)
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: `${userEmail} must sign in once before being added to a team.`,
+				});
 
 			return ctx.db.permission.create({
 				data: { userId: user.id, teamId, role },

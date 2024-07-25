@@ -213,6 +213,27 @@ export default function UpdatePermission({
 															</button>
 														</td>
 													</tr>
+													{addPermissions.isError && (
+														<tr>
+															<td colSpan={3} className="text-red-500">
+																{addPermissions.error.message}
+															</td>
+														</tr>
+													)}
+													{updatePermissions.isError && (
+														<tr>
+															<td colSpan={3} className="text-red-500">
+																{addPermissions.error.message}
+															</td>
+														</tr>
+													)}
+													{removePermissions.isError && (
+														<tr>
+															<td colSpan={3} className="text-red-500">
+																{addPermissions.error.message}
+															</td>
+														</tr>
+													)}
 												</tbody>
 											</table>
 										</div>
@@ -221,13 +242,6 @@ export default function UpdatePermission({
 							</div>
 						</div>
 						<div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:gap-3">
-							{/* <button
-								type="button"
-								onClick={() => updateTeam.mutate({ name, teamId: team.id })}
-								className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-75 disabled:hover:bg-indigo-600 sm:col-start-2"
-								disabled={updatePermissions.isPending || !name || name === team.name}>
-								{updatePermissions.isPending ? <Loading /> : "Update"}
-							</button> */}
 							<button
 								type="button"
 								data-autofocus

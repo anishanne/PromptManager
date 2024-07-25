@@ -39,14 +39,24 @@ export default function Breadcrumbs() {
 	}, [pathname, team, project, prompt]);
 
 	return (
-		<nav aria-label="Breadcrumb" className="flex">
-			<ol role="list" className="mx-auto flex w-full max-w-screen-xl space-x-4 bg-[#2e026d] px-4 pt-2 sm:px-6 lg:px-8">
+		<nav aria-label="Breadcrumb" className="w-full bg-[#2e026d]">
+			<ol role="list" className="mx-auto flex w-full max-w-screen-xl space-x-4 bg-[#2e026d] px-4 pt-4 sm:px-6 lg:px-8">
 				<li className="flex">
 					<div className="flex items-center">
 						<Link href="/" className="text-gray-400 hover:text-gray-200">
 							<HomeIcon aria-hidden="true" className="h-5 w-5 flex-shrink-0" />
 							<span className="sr-only">Home</span>
 						</Link>
+						{pieces.length === 0 && (
+							<svg
+								fill="currentColor"
+								viewBox="0 0 24 44"
+								preserveAspectRatio="none"
+								aria-hidden="true"
+								className="ml-4 h-full w-6 flex-shrink-0 text-gray-300 hover:text-gray-100">
+								<path d="M.293 0l22 22-22 22h1.414l22-22-22-22H.293z" />
+							</svg>
+						)}
 					</div>
 				</li>
 				<li key="team" className="flex">

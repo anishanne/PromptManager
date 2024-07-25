@@ -101,6 +101,8 @@ export default function UpdateTeam({
 									)}
 								</div>
 							</div>
+							{updateTeam.error && <p className="mt-2 text-red-500">{updateTeam.error.message}</p>}
+							{deleteTeam.error && <p className="mt-2 text-red-500">{deleteTeam.error.message}</p>}
 							<div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
 								<button
 									type="button"
