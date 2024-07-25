@@ -5,6 +5,7 @@ import Link from "next/link";
 import CreatePrompt from "./createPrompt";
 import { useState } from "react";
 import UpdateProject from "./updateProject";
+import DetectVariables from "../../../../lib/detect";
 
 export function Prompts({ teamId, projectId }: { teamId: string; projectId: string }) {
 	const [project] = api.project.get.useSuspenseQuery({ id: projectId });
@@ -24,7 +25,9 @@ export function Prompts({ teamId, projectId }: { teamId: string; projectId: stri
 								href={`/t/${teamId}/p/${projectId}/${prompt.id}`}
 								key={prompt.id}>
 								<h3 className="text-2xl font-bold">{prompt.name} →</h3>
-								<div className="text-lg">This is a fire prompt.</div>
+								<div className="text-lg">
+									{prompt.status} - {DetectVariables(prompt.text).length} Prompt Variables
+								</div>
 							</Link>
 						))}
 					</div>

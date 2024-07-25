@@ -1,14 +1,15 @@
 "use client";
 
 import { api } from "@/trpc/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import UpdatePrompt from "./updatePrompt";
-import Link from "next/link";
 import Loading from "../loading";
+import DetectVariables from "../../../../lib/detect";
 
 export function Prompt({ teamId, projectId, promptId }: { teamId: string; projectId: string; promptId: string }) {
 	const [prompt] = api.prompt.get.useSuspenseQuery({ promptId });
 	const [openUpdate, setOpenUpdate] = useState(false);
+	const [variables, setVariables] = useState(DetectVariables(prompt.text));
 	const [text, setText] = useState(prompt.text);
 	const utils = api.useUtils();
 
@@ -17,6 +18,10 @@ export function Prompt({ teamId, projectId, promptId }: { teamId: string; projec
 			await utils.prompt.invalidate();
 		},
 	});
+
+	useEffect(() => {
+		setVariables(DetectVariables(text));
+	}, [text]);
 
 	return (
 		<div className="w-full max-w-lg text-center">
@@ -31,6 +36,27 @@ export function Prompt({ teamId, projectId, promptId }: { teamId: string; projec
 						setText(e.target.value);
 					}}
 					className="rounded-md bg-gray-800 p-2"></textarea>
+
+				<div>
+					<span>Detected Prompt Variable ({variables.length})</span>
+					<div>
+						{variables.map((variable) => (
+							<div key={variable} className="mt-2 flex items-center gap-4">
+								<div>{variable}</div>
+								<div>
+									<input
+										type="text"
+										className="rounded-md bg-gray-800 p-2"
+										placeholder="Value"
+										onChange={(e) => {
+											setText((prev) => prev.replace(`{${variable}}`, e.target.value));
+										}}
+									/>
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
 			</p>
 
 			{["ADMIN", "MANAGER", "WRITER"].includes(prompt.permission) && (
@@ -42,6 +68,7 @@ export function Prompt({ teamId, projectId, promptId }: { teamId: string; projec
 								promptId,
 								name: prompt.name,
 								text,
+								status: prompt.status,
 							});
 						}}
 						className="mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"

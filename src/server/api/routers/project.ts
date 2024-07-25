@@ -17,11 +17,7 @@ export const projectRouter = createTRPCRouter({
 			});
 
 			if (!team) throw new TRPCError({ code: "NOT_FOUND", message: "Team not found." });
-			if (
-				!team.users.some(
-					(user) => user.userId === ctx.session.user.id && (user.role === "MANAGER" || user.role === "ADMIN"),
-				)
-			)
+			if (!team.users.some((user) => user.userId === ctx.session.user.id && ["ADMIN", "MANAGER"].includes(user.role)))
 				return new TRPCError({ code: "FORBIDDEN", message: "Forbidden." });
 
 			return ctx.db.project.create({
@@ -59,7 +55,7 @@ export const projectRouter = createTRPCRouter({
 		if (!project) throw new TRPCError({ code: "NOT_FOUND", message: "Project not found." });
 		if (
 			!project.team.users.some(
-				(user) => user.userId === ctx.session.user.id && (user.role === "ADMIN" || user.role === "MANAGER"),
+				(user) => user.userId === ctx.session.user.id && ["ADMIN", "MANAGER"].includes(user.role),
 			)
 		)
 			return new TRPCError({ code: "FORBIDDEN" });

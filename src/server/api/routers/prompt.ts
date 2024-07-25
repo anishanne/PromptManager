@@ -38,22 +38,13 @@ export const promptRouter = createTRPCRouter({
 				name: z.string().min(1),
 				text: z.string().min(1),
 				projectId: z.string().min(1),
+				status: z.nativeEnum(Status),
 			}),
 		)
-		.mutation(async ({ ctx, input: { promptId, name, text, projectId } }) => {
+		.mutation(async ({ ctx, input: { promptId, name, text, projectId, status } }) => {
 			const prompt = await ctx.db.prompt.findFirst({
 				where: { id: promptId },
-				include: {
-					project: {
-						include: {
-							team: {
-								include: {
-									users: true,
-								},
-							},
-						},
-					},
-				},
+				include: { project: { include: { team: { include: { users: true } } } } },
 			});
 			if (!prompt) throw new TRPCError({ code: "NOT_FOUND", message: "Prompt not found." });
 			if (
@@ -69,6 +60,7 @@ export const promptRouter = createTRPCRouter({
 					name,
 					text,
 					projectId,
+					status,
 				},
 			});
 		}),
