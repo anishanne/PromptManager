@@ -5,6 +5,7 @@ import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/re
 import { UserGroupIcon } from "@heroicons/react/24/outline";
 import { api } from "@/trpc/react";
 import Loading from "../loading";
+import Error from "../error";
 
 export default function CreateTeam({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) {
 	const [name, setName] = useState("");
@@ -59,6 +60,7 @@ export default function CreateTeam({ open, setOpen }: { open: boolean; setOpen: 
 								</div>
 							</div>
 						</div>
+						<Error message={createTeam?.error?.message} />
 						<div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
 							<button
 								type="button"

@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import Loading from "../loading";
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import Error from "../error";
 import type { Project, Prompt } from "@prisma/client";
 
 export default function UpdatePrompt({
@@ -138,8 +139,8 @@ export default function UpdatePrompt({
 								</div>
 							</div>
 						</div>
-						{updatePrompt.error && <p className="mt-2 text-red-500">{updatePrompt.error.message}</p>}
-						{deletePrompt.error && <p className="mt-2 text-red-500">{deletePrompt.error.message}</p>}
+						<Error message={updatePrompt.error?.message} />
+						<Error message={deletePrompt.error?.message} />
 						<div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
 							<button
 								type="button"

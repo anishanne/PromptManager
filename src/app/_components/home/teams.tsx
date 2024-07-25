@@ -30,7 +30,7 @@ export function Teams() {
 				onClick={() => {
 					setOpen(true);
 				}}
-				className="mt-2 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20">
+				className="mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20">
 				Create A Team
 			</button>
 			<CreateTeam open={open} setOpen={setOpen} />

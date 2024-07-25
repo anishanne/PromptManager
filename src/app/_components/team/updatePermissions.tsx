@@ -5,9 +5,10 @@ import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/re
 import { CheckIcon, ChevronUpDownIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 import { api } from "@/trpc/react";
 import Loading from "../loading";
-import { Team, type Project, type Permission, type User, Role } from "@prisma/client";
+import { type Team, type Project, type Permission, type User, Role } from "@prisma/client";
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from "@headlessui/react";
 import { PlusIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import Error from "../error";
 
 const roles = [Role.ADMIN, Role.MANAGER, Role.WRITER, Role.VIEWER];
 
@@ -154,14 +155,16 @@ export default function UpdatePermission({
 													</tr>
 												</thead>
 												<tbody className="divide-y divide-gray-600">
-													{permissions?.map((permission) => (
-														<PermissionRow
-															permission={permission}
-															updatePermissions={updatePermissions}
-															removePermissions={removePermissions}
-															user={user}
-														/>
-													))}
+													{Array.isArray(permissions) &&
+														permissions?.map((permission) => (
+															<PermissionRow
+																key={permission.userId}
+																permission={permission}
+																updatePermissions={updatePermissions}
+																removePermissions={removePermissions}
+																user={user}
+															/>
+														))}
 													<tr>
 														<td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-100 sm:pl-0">
 															<input
@@ -213,27 +216,6 @@ export default function UpdatePermission({
 															</button>
 														</td>
 													</tr>
-													{addPermissions.error && (
-														<tr>
-															<td colSpan={3} className="text-red-500">
-																{addPermissions.error.message}
-															</td>
-														</tr>
-													)}
-													{updatePermissions.error && (
-														<tr>
-															<td colSpan={3} className="text-red-500">
-																{updatePermissions.error.message}
-															</td>
-														</tr>
-													)}
-													{removePermissions.error && (
-														<tr>
-															<td colSpan={3} className="text-red-500">
-																{removePermissions.error.message}
-															</td>
-														</tr>
-													)}
 												</tbody>
 											</table>
 										</div>
@@ -241,6 +223,9 @@ export default function UpdatePermission({
 								</div>
 							</div>
 						</div>
+						<Error message={addPermissions?.error?.message} />
+						<Error message={updatePermissions?.error?.message} />
+						<Error message={removePermissions?.error?.message} />
 						<div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:gap-3">
 							<button
 								type="button"

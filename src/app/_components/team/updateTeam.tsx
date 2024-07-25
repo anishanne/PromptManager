@@ -8,6 +8,7 @@ import Loading from "../loading";
 import { useRouter } from "next/navigation";
 import UpdatePermissions from "./updatePermissions";
 import type { Team, Project } from "@prisma/client";
+import Error from "../error";
 
 export default function UpdateTeam({
 	open,
@@ -62,7 +63,6 @@ export default function UpdateTeam({
 										Update Team —{" "}
 										<button
 											onClick={() => {
-												if (team.projects.length > 0) return alert("Must delete or move all projects first.");
 												if (confirm("Are you sure?")) deleteTeam.mutate({ teamId: team.id });
 											}}
 											className="hover:text-red-500">
@@ -101,8 +101,8 @@ export default function UpdateTeam({
 									)}
 								</div>
 							</div>
-							{updateTeam.error && <p className="mt-2 text-red-500">{updateTeam.error.message}</p>}
-							{deleteTeam.error && <p className="mt-2 text-red-500">{deleteTeam.error.message}</p>}
+							<Error message={updateTeam?.error?.message} />
+							<Error message={deleteTeam?.error?.message} />
 							<div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
 								<button
 									type="button"

@@ -6,6 +6,7 @@ import { DocumentIcon } from "@heroicons/react/24/outline";
 import { api } from "@/trpc/react";
 import type { Project, Prompt } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import Error from "../error";
 import Loading from "../loading";
 
 export default function UpdateProject({
@@ -59,7 +60,6 @@ export default function UpdateProject({
 									Edit Project —{" "}
 									<button
 										onClick={() => {
-											if (project.prompts.length > 0) return alert("Must delete or move all prompts first.");
 											if (confirm("Are you sure?")) deleteProject.mutate({ id: project.id });
 										}}>
 										Delete
@@ -87,9 +87,9 @@ export default function UpdateProject({
 								</div>
 							</div>
 						</div>
-						{updateProject.error && <p className="mt-2 text-sm text-red-500">{updateProject.error.message}</p>}
 
-						{deleteProject.error && <p className="mt-2 text-sm text-red-500">{deleteProject.error.message}</p>}
+						<Error message={updateProject.error?.message} />
+						<Error message={deleteProject.error?.message} />
 
 						<div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
 							<button

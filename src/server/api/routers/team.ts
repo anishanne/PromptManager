@@ -129,6 +129,9 @@ export const teamRouter = createTRPCRouter({
 	permissionsRemove: protectedProcedure
 		.input(z.object({ teamId: z.string().min(1), userId: z.string().min(1) }))
 		.mutation(async ({ ctx, input: { teamId, userId } }) => {
+			if (userId === ctx.session.user.id)
+				throw new TRPCError({ code: "BAD_REQUEST", message: "Cannot remove yourself." });
+
 			const team = await ctx.db.team.findFirst({
 				where: {
 					users: { some: { userId: ctx.session.user.id } },
@@ -170,6 +173,9 @@ export const teamRouter = createTRPCRouter({
 					code: "NOT_FOUND",
 					message: `${userEmail} must sign in once before being added to a team.`,
 				});
+
+			if (team.users.some((u) => u.userId === user.id))
+				throw new TRPCError({ code: "BAD_REQUEST", message: "User already on team." });
 
 			return ctx.db.permission.create({
 				data: { userId: user.id, teamId, role },
