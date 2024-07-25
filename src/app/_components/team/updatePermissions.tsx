@@ -14,9 +14,13 @@ const roles = [Role.ADMIN, Role.MANAGER, Role.WRITER, Role.VIEWER];
 function PermissionRow({
 	permission,
 	updatePermissions,
+	removePermissions,
+	user,
 }: {
 	permission: Permission & { user: User };
 	updatePermissions: ReturnType<typeof api.team.permissionsUpdate.useMutation>;
+	removePermissions: ReturnType<typeof api.team.permissionsRemove.useMutation>;
+	user: { id: string };
 }) {
 	const [role, setRow] = useState(permission.role);
 
@@ -33,7 +37,9 @@ function PermissionRow({
 			<td className="whitespace-nowrap px-3 py-4 text-sm text-gray-400">
 				<Listbox value={role} onChange={setRow}>
 					<div className="relative z-50">
-						<ListboxButton className="relative w-full cursor-default rounded-md bg-gray-800 py-1.5 pl-3 pr-10 text-left text-gray-100 shadow-sm ring-1 ring-inset ring-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+						<ListboxButton
+							className="relative w-full cursor-default rounded-md bg-gray-800 py-1.5 pl-3 pr-10 text-left text-gray-100 shadow-sm ring-1 ring-inset ring-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-600 disabled:opacity-75 sm:text-sm sm:leading-6"
+							disabled={user.id === permission.userId}>
 							<span className="block min-w-24 truncate">{role}</span>
 							<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
 								<ChevronUpDownIcon aria-hidden="true" className="h-5 w-5 text-gray-400" />
@@ -62,9 +68,11 @@ function PermissionRow({
 			<td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-100 sm:pl-0">
 				<button
 					onClick={() => {
-						updatePermissions.mutate({ teamId: permission.teamId, userId: permission.userId });
-					}}>
-					<XMarkIcon className="h-5 w-5 text-gray-400 hover:text-red-500" />
+						removePermissions.mutate({ teamId: permission.teamId, userId: permission.userId });
+					}}
+					disabled={user.id === permission.userId}
+					className="text-gray-400 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-75 disabled:hover:text-gray-400">
+					<XMarkIcon className="h-5 w-5" />
 				</button>
 			</td>
 		</tr>
@@ -75,15 +83,17 @@ export default function UpdatePermission({
 	open,
 	setOpen,
 	team,
+	user,
 }: {
 	open: boolean;
 	setOpen: (open: boolean) => void;
 	team: Team & { projects: Project[] };
+	user: { id: string };
 }) {
 	const utils = api.useUtils();
 
 	const [permissions] = api.team.permissions.useSuspenseQuery({ teamId: team.id });
-	const [name, setName] = useState("");
+	const [userEmail, setUserEmail] = useState("");
 	const [role, setRow] = useState(Role.VIEWER);
 
 	const updatePermissions = api.team.permissionsUpdate.useMutation({
@@ -91,6 +101,19 @@ export default function UpdatePermission({
 			await utils.team.invalidate();
 		},
 	});
+
+	const removePermissions = api.team.permissionsRemove.useMutation({
+		onSuccess: async () => {
+			await utils.team.invalidate();
+		},
+	});
+
+	const addPermissions = api.team.permissionsAdd.useMutation({
+		onSuccess: async () => {
+			await utils.team.invalidate();
+		},
+	});
+
 	return (
 		<Dialog open={open} onClose={setOpen} className="relative z-10">
 			<DialogBackdrop
@@ -132,11 +155,23 @@ export default function UpdatePermission({
 												</thead>
 												<tbody className="divide-y divide-gray-600">
 													{permissions?.map((permission) => (
-														<PermissionRow permission={permission} updatePermissions={updatePermissions} />
+														<PermissionRow
+															permission={permission}
+															updatePermissions={updatePermissions}
+															removePermissions={removePermissions}
+															user={user}
+														/>
 													))}
 													<tr>
 														<td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-100 sm:pl-0">
-															Add New
+															<input
+																type="text"
+																name="email"
+																id="email"
+																className="block w-full rounded-md border-0 bg-gray-800 py-1.5 pl-2 text-gray-200 shadow-sm ring-1 ring-inset ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+																placeholder="hello@example.com"
+																onChange={(e) => setUserEmail(e.target.value)}
+															/>
 														</td>
 														<td className="whitespace-nowrap px-3 py-4 text-sm text-gray-400">
 															<Listbox value={role} onChange={setRow}>
@@ -170,7 +205,10 @@ export default function UpdatePermission({
 															</Listbox>
 														</td>
 														<td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-100 sm:pl-0">
-															<button>
+															<button
+																onClick={() => {
+																	addPermissions.mutate({ teamId: team.id, userEmail, role });
+																}}>
 																<PlusIcon className="h-5 w-5 text-gray-400 hover:text-purple-500" />
 															</button>
 														</td>

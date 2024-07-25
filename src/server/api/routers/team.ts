@@ -98,7 +98,7 @@ export const teamRouter = createTRPCRouter({
 		}),
 
 	permissionsUpdate: protectedProcedure
-		.input(z.object({ teamId: z.string().min(1), userId: z.string().min(1), role: z.nativeEnum(Role).optional() }))
+		.input(z.object({ teamId: z.string().min(1), userId: z.string().min(1), role: z.nativeEnum(Role) }))
 		.mutation(async ({ ctx, input: { teamId, userId, role } }) => {
 			const team = await ctx.db.team.findFirst({
 				where: {
@@ -116,6 +116,49 @@ export const teamRouter = createTRPCRouter({
 				where: { permissionId: { teamId, userId } },
 				update: { role },
 				create: { userId, teamId, role },
+			});
+		}),
+
+	permissionsRemove: protectedProcedure
+		.input(z.object({ teamId: z.string().min(1), userId: z.string().min(1) }))
+		.mutation(async ({ ctx, input: { teamId, userId } }) => {
+			const team = await ctx.db.team.findFirst({
+				where: {
+					users: { some: { userId: ctx.session.user.id } },
+					id: teamId,
+				},
+				include: { users: true },
+			});
+
+			if (!team) throw new TRPCError({ code: "NOT_FOUND" });
+			if (!team.users.some((user) => user.userId === ctx.session.user.id && Role.ADMIN == user.role))
+				return new TRPCError({ code: "FORBIDDEN" });
+
+			return ctx.db.permission.delete({
+				where: { permissionId: { teamId, userId } },
+			});
+		}),
+
+	permissionsAdd: protectedProcedure
+		.input(z.object({ teamId: z.string().min(1), userEmail: z.string().min(1), role: z.nativeEnum(Role) }))
+		.mutation(async ({ ctx, input: { teamId, userEmail, role } }) => {
+			const team = await ctx.db.team.findFirst({
+				where: {
+					users: { some: { userId: ctx.session.user.id } },
+					id: teamId,
+				},
+				include: { users: true },
+			});
+
+			if (!team) throw new TRPCError({ code: "NOT_FOUND" });
+			if (!team.users.some((user) => user.userId === ctx.session.user.id && Role.ADMIN == user.role))
+				return new TRPCError({ code: "FORBIDDEN" });
+
+			const user = await ctx.db.user.findFirst({ where: { email: userEmail } });
+			if (!user) throw new TRPCError({ code: "NOT_FOUND" });
+
+			return ctx.db.permission.create({
+				data: { userId: user.id, teamId, role },
 			});
 		}),
 });

@@ -13,10 +13,12 @@ export default function UpdateTeam({
 	open,
 	setOpen,
 	team,
+	user,
 }: {
 	open: boolean;
 	setOpen: (open: boolean) => void;
 	team: Team & { projects: Project[] } & { permission: string };
+	user: { id: string };
 }) {
 	const [name, setName] = useState(team.name);
 	const [openPermissions, setOpenPermissions] = useState(false);
@@ -119,7 +121,7 @@ export default function UpdateTeam({
 					</div>
 				</div>
 			</Dialog>
-			<UpdatePermissions open={openPermissions} setOpen={setOpenPermissions} team={team} />
+			<UpdatePermissions open={openPermissions} setOpen={setOpenPermissions} team={team} user={user} />
 		</>
 	);
 }

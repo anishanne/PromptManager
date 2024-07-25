@@ -6,7 +6,7 @@ import CreateProject from "@/app/_components/team/createProject";
 import UpdateTeam from "@/app/_components/team/updateTeam";
 import { useState } from "react";
 
-export function Projects({ teamId }: { teamId: string }) {
+export function Projects({ teamId, user }: { teamId: string; user: { id: string } }) {
 	const [team] = api.team.get.useSuspenseQuery({ teamId });
 	const [openCreate, setOpenCreate] = useState(false);
 	const [openUpdate, setOpenUpdate] = useState(false);
@@ -51,7 +51,7 @@ export function Projects({ teamId }: { teamId: string }) {
 						</button>
 					</div>
 					<CreateProject open={openCreate} setOpen={setOpenCreate} teamId={teamId} />
-					<UpdateTeam open={openUpdate} setOpen={setOpenUpdate} team={team} />
+					<UpdateTeam open={openUpdate} setOpen={setOpenUpdate} team={team} user={user} />
 				</>
 			)}
 		</div>
