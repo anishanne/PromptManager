@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { Role } from "@prisma/client";
+import { permission } from "process";
 
 export const teamRouter = createTRPCRouter({
 	create: protectedProcedure.input(z.object({ name: z.string().min(1) })).mutation(async ({ ctx, input }) => {
@@ -73,5 +74,45 @@ export const teamRouter = createTRPCRouter({
 				ctx.db.permission.deleteMany({ where: { teamId } }),
 				ctx.db.team.delete({ where: { id: teamId } }),
 			]);
+		}),
+
+	permissions: protectedProcedure
+		.input(z.object({ teamId: z.string().min(1) }))
+		.query(async ({ ctx, input: { teamId } }) => {
+			const team = await ctx.db.team.findFirst({
+				where: {
+					users: { some: { userId: ctx.session.user.id } },
+					id: teamId,
+				},
+				include: { users: true },
+			});
+
+			if (!team) throw new TRPCError({ code: "NOT_FOUND" });
+			if (!team.users.some((user) => user.userId === ctx.session.user.id && Role.ADMIN == user.role))
+				return new TRPCError({ code: "FORBIDDEN" });
+
+			return team.users;
+		}),
+
+	permissionsUpdate: protectedProcedure
+		.input(z.object({ teamId: z.string().min(1), userId: z.string().min(1), role: z.nativeEnum(Role) }))
+		.mutation(async ({ ctx, input: { teamId, userId, role } }) => {
+			const team = await ctx.db.team.findFirst({
+				where: {
+					users: { some: { userId: ctx.session.user.id } },
+					id: teamId,
+				},
+				include: { users: true },
+			});
+
+			if (!team) throw new TRPCError({ code: "NOT_FOUND" });
+			if (!team.users.some((user) => user.userId === ctx.session.user.id && Role.ADMIN == user.role))
+				return new TRPCError({ code: "FORBIDDEN" });
+
+			return ctx.db.permission.upsert({
+				where: { permissionId: { teamId, userId } },
+				update: { role },
+				create: { userId, teamId, role },
+			});
 		}),
 });

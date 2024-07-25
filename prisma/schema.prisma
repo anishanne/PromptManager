@@ -85,6 +85,7 @@ model Permission {
     userId String
     role   Role
 
+    @@id(name: "permissionId", [teamId, userId])
     @@unique([teamId, userId])
 }
 
