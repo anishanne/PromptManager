@@ -12,8 +12,6 @@ export function Projects({ teamId }: { teamId: string }) {
   const [openCreate, setOpenCreate] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
 
-  if (!team) return null;
-
   return (
     <div className="w-full text-center">
       <h1 className="mb-2 text-5xl font-extrabold tracking-tight sm:text-[5rem]">
