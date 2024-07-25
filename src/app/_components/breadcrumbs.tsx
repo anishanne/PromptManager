@@ -43,10 +43,10 @@ export default function Breadcrumbs() {
 			<ol role="list" className="mx-auto flex w-full max-w-screen-xl space-x-4 bg-[#2e026d] px-4 pt-2 sm:px-6 lg:px-8">
 				<li className="flex">
 					<div className="flex items-center">
-						<a href="#" className="text-gray-400 hover:text-gray-200">
+						<Link href="/" className="text-gray-400 hover:text-gray-200">
 							<HomeIcon aria-hidden="true" className="h-5 w-5 flex-shrink-0" />
 							<span className="sr-only">Home</span>
-						</a>
+						</Link>
 					</div>
 				</li>
 				<li key="team" className="flex">

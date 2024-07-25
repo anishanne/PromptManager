@@ -91,11 +91,14 @@ export const teamRouter = createTRPCRouter({
 			if (!team.users.some((user) => user.userId === ctx.session.user.id && Role.ADMIN == user.role))
 				return new TRPCError({ code: "FORBIDDEN" });
 
-			return team.users;
+			return await ctx.db.permission.findMany({
+				where: { teamId },
+				include: { user: true },
+			});
 		}),
 
 	permissionsUpdate: protectedProcedure
-		.input(z.object({ teamId: z.string().min(1), userId: z.string().min(1), role: z.nativeEnum(Role) }))
+		.input(z.object({ teamId: z.string().min(1), userId: z.string().min(1), role: z.nativeEnum(Role).optional() }))
 		.mutation(async ({ ctx, input: { teamId, userId, role } }) => {
 			const team = await ctx.db.team.findFirst({
 				where: {
