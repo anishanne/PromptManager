@@ -36,10 +36,10 @@ export const teamRouter = createTRPCRouter({
 			},
 			include: { projects: { include: { prompts: true } }, users: true },
 		});
-		if (!team) throw new TRPCError({ code: "NOT_FOUND" });
+		if (!team) throw new TRPCError({ code: "NOT_FOUND", message: "Team not found." });
 
 		const user = team.users.find((user) => user.userId === ctx.session.user.id);
-		if (!user) throw new TRPCError({ code: "NOT_FOUND" });
+		if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found." });
 
 		return { ...team, permission: user.role };
 	}),
@@ -64,11 +64,12 @@ export const teamRouter = createTRPCRouter({
 				include: { projects: true, users: true },
 			});
 
-			if (!team) throw new TRPCError({ code: "NOT_FOUND" });
+			if (!team) throw new TRPCError({ code: "NOT_FOUND", message: "Team not found." });
 			if (!team.users.some((user) => user.userId === ctx.session.user.id && Role.ADMIN == user.role))
-				return new TRPCError({ code: "FORBIDDEN" });
+				return new TRPCError({ code: "FORBIDDEN", message: "You do not have permission to delete this team." });
 
-			if (team.projects.length > 0) throw new TRPCError({ code: "BAD_REQUEST" });
+			if (team.projects.length > 0)
+				throw new TRPCError({ code: "BAD_REQUEST", message: "Must delete or move all projects first." });
 
 			return ctx.db.$transaction([
 				ctx.db.permission.deleteMany({ where: { teamId } }),
@@ -87,9 +88,12 @@ export const teamRouter = createTRPCRouter({
 				include: { users: true },
 			});
 
-			if (!team) throw new TRPCError({ code: "NOT_FOUND" });
+			if (!team) throw new TRPCError({ code: "NOT_FOUND", message: "Team not found." });
 			if (!team.users.some((user) => user.userId === ctx.session.user.id && Role.ADMIN == user.role))
-				return new TRPCError({ code: "FORBIDDEN" });
+				return new TRPCError({
+					code: "FORBIDDEN",
+					message: "You do not have permission to view permissions for this team.",
+				});
 
 			return await ctx.db.permission.findMany({
 				where: { teamId },
@@ -108,9 +112,12 @@ export const teamRouter = createTRPCRouter({
 				include: { users: true },
 			});
 
-			if (!team) throw new TRPCError({ code: "NOT_FOUND" });
+			if (!team) throw new TRPCError({ code: "NOT_FOUND", message: "Team not found." });
 			if (!team.users.some((user) => user.userId === ctx.session.user.id && Role.ADMIN == user.role))
-				return new TRPCError({ code: "FORBIDDEN" });
+				return new TRPCError({
+					code: "FORBIDDEN",
+					message: "You do not have permission to update permissions for this team.",
+				});
 
 			return ctx.db.permission.upsert({
 				where: { permissionId: { teamId, userId } },
@@ -130,9 +137,12 @@ export const teamRouter = createTRPCRouter({
 				include: { users: true },
 			});
 
-			if (!team) throw new TRPCError({ code: "NOT_FOUND" });
+			if (!team) throw new TRPCError({ code: "NOT_FOUND", message: "Team not found." });
 			if (!team.users.some((user) => user.userId === ctx.session.user.id && Role.ADMIN == user.role))
-				return new TRPCError({ code: "FORBIDDEN" });
+				return new TRPCError({
+					code: "FORBIDDEN",
+					message: "You do not have permission to remove users from this team.",
+				});
 
 			return ctx.db.permission.delete({
 				where: { permissionId: { teamId, userId } },

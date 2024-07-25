@@ -16,13 +16,13 @@ export const projectRouter = createTRPCRouter({
 				include: { projects: true, users: true },
 			});
 
-			if (!team) throw new TRPCError({ code: "NOT_FOUND" });
+			if (!team) throw new TRPCError({ code: "NOT_FOUND", message: "Team not found." });
 			if (
 				!team.users.some(
 					(user) => user.userId === ctx.session.user.id && (user.role === "MANAGER" || user.role === "ADMIN"),
 				)
 			)
-				return new TRPCError({ code: "FORBIDDEN" });
+				return new TRPCError({ code: "FORBIDDEN", message: "Forbidden." });
 
 			return ctx.db.project.create({
 				data: input,
@@ -35,10 +35,10 @@ export const projectRouter = createTRPCRouter({
 			include: { prompts: true, team: { include: { users: true } } },
 		});
 
-		if (!project) throw new TRPCError({ code: "NOT_FOUND" });
+		if (!project) throw new TRPCError({ code: "NOT_FOUND", message: "Project not found." });
 
 		const permission = project.team.users.find((user) => user.userId === ctx.session.user.id);
-		if (!permission) throw new TRPCError({ code: "FORBIDDEN" });
+		if (!permission) throw new TRPCError({ code: "FORBIDDEN", message: "Forbidden." });
 
 		return {
 			...project,
@@ -56,7 +56,7 @@ export const projectRouter = createTRPCRouter({
 				},
 			},
 		});
-		if (!project) throw new TRPCError({ code: "NOT_FOUND" });
+		if (!project) throw new TRPCError({ code: "NOT_FOUND", message: "Project not found." });
 		if (
 			!project.team.users.some(
 				(user) => user.userId === ctx.session.user.id && (user.role === "ADMIN" || user.role === "MANAGER"),
@@ -64,7 +64,7 @@ export const projectRouter = createTRPCRouter({
 		)
 			return new TRPCError({ code: "FORBIDDEN" });
 
-		if (project.prompts.length > 0) return new TRPCError({ code: "BAD_REQUEST" });
+		if (project.prompts.length > 0) return new TRPCError({ code: "BAD_REQUEST", message: "Project has prompts." });
 
 		return ctx.db.project.delete({
 			where: { id: input.id },
@@ -79,10 +79,10 @@ export const projectRouter = createTRPCRouter({
 				include: { prompts: true, team: { include: { users: true } } },
 			});
 
-			if (!project) throw new TRPCError({ code: "NOT_FOUND" });
+			if (!project) throw new TRPCError({ code: "NOT_FOUND", message: "Project not found." });
 
 			if (!project.team.users.some((user) => user.userId === ctx.session.user.id && user.role === Role.ADMIN))
-				return new TRPCError({ code: "FORBIDDEN" });
+				return new TRPCError({ code: "FORBIDDEN", message: "Forbidden." });
 
 			return ctx.db.project.update({
 				where: { id: projectId },
@@ -92,15 +92,7 @@ export const projectRouter = createTRPCRouter({
 
 	list: protectedProcedure.query(async ({ ctx }) => {
 		return ctx.db.project.findMany({
-			where: {
-				team: {
-					users: {
-						some: {
-							userId: ctx.session.user.id,
-						},
-					},
-				},
-			},
+			where: { team: { users: { some: { userId: ctx.session.user.id } } } },
 		});
 	}),
 });

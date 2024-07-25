@@ -60,7 +60,7 @@ export default function Breadcrumbs() {
 					</div>
 				</li>
 				<li key="team" className="flex">
-					{pieces.map((piece, index) => (
+					{pieces.map((piece) => (
 						<div className="flex items-center" key={piece.name}>
 							<svg
 								fill="currentColor"

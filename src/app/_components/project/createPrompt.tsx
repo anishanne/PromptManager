@@ -86,6 +86,8 @@ export default function CreateProject({
 								</div>
 							</div>
 						</div>
+						{createPrompt.error && <p className="mt-2 text-sm text-red-500">{createPrompt.error.message}</p>}
+
 						<div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
 							<button
 								type="button"

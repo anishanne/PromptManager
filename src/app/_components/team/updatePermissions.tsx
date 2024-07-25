@@ -213,24 +213,24 @@ export default function UpdatePermission({
 															</button>
 														</td>
 													</tr>
-													{addPermissions.isError && (
+													{addPermissions.error && (
 														<tr>
 															<td colSpan={3} className="text-red-500">
 																{addPermissions.error.message}
 															</td>
 														</tr>
 													)}
-													{updatePermissions.isError && (
+													{updatePermissions.error && (
 														<tr>
 															<td colSpan={3} className="text-red-500">
-																{addPermissions.error.message}
+																{updatePermissions.error.message}
 															</td>
 														</tr>
 													)}
-													{removePermissions.isError && (
+													{removePermissions.error && (
 														<tr>
 															<td colSpan={3} className="text-red-500">
-																{addPermissions.error.message}
+																{removePermissions.error.message}
 															</td>
 														</tr>
 													)}
@@ -247,7 +247,11 @@ export default function UpdatePermission({
 								data-autofocus
 								onClick={() => setOpen(false)}
 								className="mt-3 inline-flex w-full justify-center rounded-md bg-gray-800 px-3 py-2 text-sm font-semibold text-gray-100 shadow-sm ring-1 ring-inset ring-gray-600 hover:bg-gray-700 sm:col-start-1 sm:mt-0">
-								{updatePermissions.isPending ? <Loading /> : "Close"}
+								{updatePermissions.isPending || removePermissions.isPending || addPermissions.isPending ? (
+									<Loading />
+								) : (
+									"Close"
+								)}
 							</button>
 						</div>
 					</DialogPanel>

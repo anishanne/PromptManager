@@ -18,9 +18,9 @@ export const promptRouter = createTRPCRouter({
 				where: { id: input.projectId },
 				include: { team: { include: { users: true } } },
 			});
-			if (!project) throw new TRPCError({ code: "NOT_FOUND" });
+			if (!project) throw new TRPCError({ code: "NOT_FOUND", message: "Project not found." });
 			if (!project.team.users.some((user) => user.userId === ctx.session.user.id))
-				throw new TRPCError({ code: "UNAUTHORIZED" });
+				throw new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorized." });
 
 			return ctx.db.prompt.create({
 				data: {
@@ -55,13 +55,13 @@ export const promptRouter = createTRPCRouter({
 					},
 				},
 			});
-			if (!prompt) throw new TRPCError({ code: "NOT_FOUND" });
+			if (!prompt) throw new TRPCError({ code: "NOT_FOUND", message: "Prompt not found." });
 			if (
 				!prompt.project.team.users.some(
 					(user) => user.userId === ctx.session.user.id && ["ADMIN", "MANAGER", "WRITER"].includes(user.role),
 				)
 			)
-				throw new TRPCError({ code: "UNAUTHORIZED" });
+				throw new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorized." });
 
 			return ctx.db.prompt.update({
 				where: { id: promptId },
@@ -78,22 +78,13 @@ export const promptRouter = createTRPCRouter({
 		.query(async ({ ctx, input: { promptId } }) => {
 			const prompt = await ctx.db.prompt.findFirst({
 				where: { id: promptId },
-				include: {
-					project: {
-						include: {
-							team: {
-								include: {
-									users: true,
-								},
-							},
-						},
-					},
-				},
+				include: { project: { include: { team: { include: { users: true } } } } },
 			});
-			if (!prompt) throw new TRPCError({ code: "NOT_FOUND" });
+			if (!prompt) throw new TRPCError({ code: "NOT_FOUND", message: "Prompt not found." });
 
 			const permission = prompt.project.team.users.find((user) => user.userId === ctx.session.user.id);
-			if (!permission) throw new TRPCError({ code: "FORBIDDEN" });
+			if (!permission)
+				throw new TRPCError({ code: "FORBIDDEN", message: "You do not have permission to view this prompt." });
 
 			return { ...prompt, permission: permission.role };
 		}),
@@ -115,13 +106,13 @@ export const promptRouter = createTRPCRouter({
 					},
 				},
 			});
-			if (!prompt) throw new TRPCError({ code: "NOT_FOUND" });
+			if (!prompt) throw new TRPCError({ code: "NOT_FOUND", message: "Prompt not found." });
 			if (
 				!prompt.project.team.users.some(
 					(user) => user.userId === ctx.session.user.id && ["ADMIN", "MANAGER"].includes(user.role),
 				)
 			)
-				throw new TRPCError({ code: "UNAUTHORIZED" });
+				throw new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorized." });
 
 			return ctx.db.prompt.delete({
 				where: { id: promptId },
@@ -130,28 +121,8 @@ export const promptRouter = createTRPCRouter({
 
 	list: protectedProcedure.query(async ({ ctx }) => {
 		return ctx.db.prompt.findMany({
-			include: {
-				project: {
-					include: {
-						team: {
-							include: {
-								users: true,
-							},
-						},
-					},
-				},
-			},
-			where: {
-				project: {
-					team: {
-						users: {
-							some: {
-								userId: ctx.session.user.id,
-							},
-						},
-					},
-				},
-			},
+			include: { project: { include: { team: { include: { users: true } } } } },
+			where: { project: { team: { users: { some: { userId: ctx.session.user.id } } } } },
 		});
 	}),
 });

@@ -87,6 +87,10 @@ export default function UpdateProject({
 								</div>
 							</div>
 						</div>
+						{updateProject.error && <p className="mt-2 text-sm text-red-500">{updateProject.error.message}</p>}
+
+						{deleteProject.error && <p className="mt-2 text-sm text-red-500">{deleteProject.error.message}</p>}
+
 						<div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
 							<button
 								type="button"
