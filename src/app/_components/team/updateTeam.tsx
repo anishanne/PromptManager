@@ -23,7 +23,6 @@ export default function UpdateTeam({
 }) {
 	const [name, setName] = useState(team.name);
 	const [openPermissions, setOpenPermissions] = useState(false);
-	const [openAPI, setOpenAPI] = useState(false);
 
 	const utils = api.useUtils();
 	const router = useRouter();
@@ -99,16 +98,6 @@ export default function UpdateTeam({
 											}}
 											className="mt-4 inline-flex w-full justify-center rounded-md bg-gray-800 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-75 disabled:hover:bg-indigo-600 sm:col-start-2">
 											Open Permission
-										</button>
-									)}
-									{team.permission === "ADMIN" && (
-										<button
-											onClick={() => {
-												setOpenAPI(true);
-												setOpen(false);
-											}}
-											className="mt-4 inline-flex w-full justify-center rounded-md bg-gray-800 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-75 disabled:hover:bg-indigo-600 sm:col-start-2">
-											Manage API Key
 										</button>
 									)}
 								</div>

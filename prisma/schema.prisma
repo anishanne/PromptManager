@@ -116,8 +116,9 @@ model Project {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    team   Team   @relation(fields: [teamId], references: [id])
+    team   Team    @relation(fields: [teamId], references: [id])
     teamId String
+    apiKey String?
 }
 
 model VerificationToken {

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { Role } from "@prisma/client";
+import StringGen from "lib/stringGen";
 
 export const projectRouter = createTRPCRouter({
 	create: protectedProcedure
@@ -91,4 +92,25 @@ export const projectRouter = createTRPCRouter({
 			where: { team: { users: { some: { userId: ctx.session.user.id } } } },
 		});
 	}),
+
+	api: protectedProcedure
+		.input(z.object({ projectId: z.string().min(1) }))
+		.mutation(async ({ ctx, input: { projectId } }) => {
+			const newKey = `PRMPT-${StringGen(5)}-${StringGen(5)}-${StringGen(5)}-${StringGen(5)}`;
+
+			const project = await ctx.db.project.findFirst({
+				where: { id: projectId },
+				include: { prompts: true, team: { include: { users: true } } },
+			});
+
+			if (!project) throw new TRPCError({ code: "NOT_FOUND", message: "Project not found." });
+
+			if (!project.team.users.some((user) => user.userId === ctx.session.user.id && user.role === Role.ADMIN))
+				return new TRPCError({ code: "FORBIDDEN", message: "Forbidden." });
+
+			return ctx.db.project.update({
+				where: { id: projectId },
+				data: { apiKey: newKey },
+			});
+		}),
 });

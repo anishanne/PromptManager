@@ -182,7 +182,4 @@ export const teamRouter = createTRPCRouter({
 				data: { userId: user.id, teamId, role },
 			});
 		}),
-
-	api: protectedProcedure.input(z.object({ teamId: z.string().min(1) })).mutation(async ({ ctx, input }) => {
-		const newKey = `PRMPT-${StringGen(5)}-${StringGen(5)}-${StringGen(5)}-${StringGen(5)}`;
 });
