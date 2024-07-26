@@ -6,6 +6,7 @@ import CreatePrompt from "./createPrompt";
 import { useState } from "react";
 import UpdateProject from "./updateProject";
 import DetectVariables from "../../../../lib/detect";
+import { Status } from "@prisma/client";
 
 export function Prompts({ teamId, projectId }: { teamId: string; projectId: string }) {
 	const [project] = api.project.get.useSuspenseQuery({ id: projectId });
@@ -18,20 +19,66 @@ export function Prompts({ teamId, projectId }: { teamId: string; projectId: stri
 			<p className="mb-4 text-lg">Your permission level: {project?.permission}</p>
 			{project?.prompts && project?.prompts.length > 0 ? (
 				<div className="w-full">
+					<h2 className="mt-2 text-2xl font-bold">PRODUCTION</h2>
 					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8 lg:grid-cols-4">
-						{project.prompts.map((prompt) => (
-							<Link
-								className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-								href={`/t/${teamId}/p/${projectId}/${prompt.id}`}
-								key={prompt.id}>
-								<h3 className="line-clamp-1 text-2xl font-bold">{prompt.name} →</h3>
-								<div className="text-lg">
-									V{prompt.versionMajor}.{prompt.versionMinor} - {prompt.status} - {DetectVariables(prompt.text).length}{" "}
-									Prompt Variables
-								</div>
-							</Link>
-						))}
+						{project.prompts
+							.filter((prompt) => prompt.status === Status.PRODUCTION)
+							.map((prompt) => (
+								<Link
+									className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
+									href={`/t/${teamId}/p/${projectId}/${prompt.id}`}
+									key={prompt.id}>
+									<h3 className="line-clamp-1 text-2xl font-bold">{prompt.name} →</h3>
+									<div className="text-lg">
+										V{prompt.versionMajor}.{prompt.versionMinor} - {prompt.status} -{" "}
+										{DetectVariables(prompt.text).length} Prompt Variables
+									</div>
+								</Link>
+							))}
 					</div>
+					{project.prompts.filter((prompt) => prompt.status === Status.PRODUCTION).length === 0 && (
+						<p className="text-lg">This project has no prompts in production.</p>
+					)}
+					<h2 className="mt-2 text-2xl font-bold">STAGING</h2>
+					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8 lg:grid-cols-4">
+						{project.prompts
+							.filter((prompt) => prompt.status === Status.STAGING)
+							.map((prompt) => (
+								<Link
+									className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
+									href={`/t/${teamId}/p/${projectId}/${prompt.id}`}
+									key={prompt.id}>
+									<h3 className="line-clamp-1 text-2xl font-bold">{prompt.name} →</h3>
+									<div className="text-lg">
+										V{prompt.versionMajor}.{prompt.versionMinor} - {prompt.status} -{" "}
+										{DetectVariables(prompt.text).length} Prompt Variables
+									</div>
+								</Link>
+							))}
+					</div>
+					{project.prompts.filter((prompt) => prompt.status === Status.STAGING).length === 0 && (
+						<p className="text-lg">This project has no prompts in staging.</p>
+					)}
+					<h2 className="mt-2 text-2xl font-bold">DRAFT</h2>
+					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8 lg:grid-cols-4">
+						{project.prompts
+							.filter((prompt) => prompt.status === Status.DRAFT)
+							.map((prompt) => (
+								<Link
+									className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
+									href={`/t/${teamId}/p/${projectId}/${prompt.id}`}
+									key={prompt.id}>
+									<h3 className="line-clamp-1 text-2xl font-bold">{prompt.name} →</h3>
+									<div className="text-lg">
+										V{prompt.versionMajor}.{prompt.versionMinor} - {prompt.status} -{" "}
+										{DetectVariables(prompt.text).length} Prompt Variables
+									</div>
+								</Link>
+							))}
+					</div>
+					{project.prompts.filter((prompt) => prompt.status === Status.DRAFT).length === 0 && (
+						<p className="text-lg">This project has no draft prompts.</p>
+					)}
 				</div>
 			) : (
 				<p className="text-lg">This project has no prompts yet.</p>

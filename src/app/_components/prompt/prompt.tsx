@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import UpdatePrompt from "./updatePrompt";
 import Loading from "../loading";
 import DetectVariables from "../../../../lib/detect";
+import { Status } from "@prisma/client";
 
 export function Prompt({ teamId, projectId, promptId }: { teamId: string; projectId: string; promptId: string }) {
 	const [prompt] = api.prompt.get.useSuspenseQuery({ promptId });
@@ -81,6 +82,32 @@ export function Prompt({ teamId, projectId, promptId }: { teamId: string; projec
 						}}
 						className="ml-4 mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20">
 						Edit Prompt
+					</button>
+					<button
+						onClick={() => {
+							updatePrompt.mutate({
+								projectId,
+								promptId,
+								name: prompt.name,
+								text,
+								status: Status.STAGING,
+							});
+						}}
+						className="ml-4 mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20">
+						Promote to Staging
+					</button>
+					<button
+						onClick={() => {
+							updatePrompt.mutate({
+								projectId,
+								promptId,
+								name: prompt.name,
+								text,
+								status: Status.PRODUCTION,
+							});
+						}}
+						className="ml-4 mt-4 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20">
+						Promote to Production
 					</button>
 				</div>
 			)}
