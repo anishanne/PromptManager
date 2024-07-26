@@ -93,7 +93,7 @@ model Prompt {
     id     String @id @default(cuid())
     name   String
     text   String
-    status Status
+    status Status @default(DRAFT)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -103,6 +103,9 @@ model Prompt {
 
     project   Project @relation(fields: [projectId], references: [id])
     projectId String
+
+    versionMinor Int @default(0)
+    versionMajor Int @default(1)
 }
 
 model Project {

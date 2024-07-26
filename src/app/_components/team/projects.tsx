@@ -23,7 +23,7 @@ export function Projects({ teamId, user }: { teamId: string; user: { id: string 
 								className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
 								href={`/t/${teamId}/p/${project.id}`}
 								key={project.id}>
-								<h3 className="text-2xl font-bold">{project.name} →</h3>
+								<h3 className="line-clamp-1 text-2xl font-bold">{project.name} →</h3>
 								<div className="text-lg">{project?.prompts?.length} prompts in this project.</div>
 							</Link>
 						))}

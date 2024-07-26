@@ -24,9 +24,10 @@ export function Prompts({ teamId, projectId }: { teamId: string; projectId: stri
 								className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
 								href={`/t/${teamId}/p/${projectId}/${prompt.id}`}
 								key={prompt.id}>
-								<h3 className="text-2xl font-bold">{prompt.name} →</h3>
+								<h3 className="line-clamp-1 text-2xl font-bold">{prompt.name} →</h3>
 								<div className="text-lg">
-									{prompt.status} - {DetectVariables(prompt.text).length} Prompt Variables
+									V{prompt.versionMajor}.{prompt.versionMinor} - {prompt.status} - {DetectVariables(prompt.text).length}{" "}
+									Prompt Variables
 								</div>
 							</Link>
 						))}

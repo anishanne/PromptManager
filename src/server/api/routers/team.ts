@@ -3,6 +3,8 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { Role } from "@prisma/client";
+import { api } from "@/trpc/server";
+import StringGen from "lib/stringGen";
 
 export const teamRouter = createTRPCRouter({
 	create: protectedProcedure.input(z.object({ name: z.string().min(1) })).mutation(async ({ ctx, input }) => {
@@ -180,4 +182,7 @@ export const teamRouter = createTRPCRouter({
 				data: { userId: user.id, teamId, role },
 			});
 		}),
+
+	api: protectedProcedure.input(z.object({ teamId: z.string().min(1) })).mutation(async ({ ctx, input }) => {
+		const newKey = `PRMPT-${StringGen(5)}-${StringGen(5)}-${StringGen(5)}-${StringGen(5)}`;
 });
